@@ -1,8 +1,8 @@
 import Foundation
 
 extension Decimal {
-    /// "2.936,39 KM" for BAM; the statement currency drives the symbol.
+    /// Formats in the user's locale with the statement currency, e.g. "2.936,39 KM" (bs) or "BAM 2,936.39" (en).
     func moneyFormatted(currency: String) -> String {
-        formatted(.currency(code: currency).locale(Locale(identifier: "bs_BA")))
+        formatted(.currency(code: currency))
     }
 }

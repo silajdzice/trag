@@ -7,20 +7,29 @@ A private money coach for iPhone. Import your bank statement and see where your 
 Trag/                       SwiftUI app (thin UI layer, MainActor by default)
   App/                      entry point, root navigation
   Features/Import/          import flow: model + views
-  Features/Statement/       statement overview
-  Shared/                   formatting, logging, preview data
+  Features/Ledger/          month overview, transactions, category picker
+  Persistence/              SwiftData models and TransactionStore
+  Shared/                   formatting, category display, logging, preview data
   Resources/                assets, privacy manifest
 TragKit/                    Swift package with all logic (pure, tested)
   StatementParsing/         bank statement -> transactions; one parser per bank (Banks/)
   Insights/                 plain-Swift numbers: totals, merchants, fees
   AICoach/                  on-device model layer (optional at runtime)
+TragTests/                  app tests (store, ledger, import errors)
 docs/                       QUALITY.md (quality bar), bank format notes
-scripts/                    check.sh (quality gate), format.sh
+scripts/                    check.sh (quality gate), format.sh, check-localization.py
 test-data/private/          real statements, git-ignored, never committed
 ```
 
 ## Principle
 Swift does the math, the LLM does the language. The model never computes totals; it calls tools that return exact numbers.
+
+## Features (so far)
+- Import Union banka PDF statements; every import is checked against the statement's own totals
+- Months of history stored on-device (SwiftData), re-imports never duplicate
+- Spending by category and by merchant, per month
+- Rule-based categories for common BiH merchants, plus your own choice per merchant
+- English and Bosnian (String Catalog, proper Bosnian plurals)
 
 ## Supported banks
 | Bank | Format | Validation |

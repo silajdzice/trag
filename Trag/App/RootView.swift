@@ -1,40 +1,69 @@
 import SwiftUI
 
 struct RootView: View {
-    @State private var importModel = StatementImportModel()
+    @State private var ledger: LedgerModel
+    @State private var importModel: StatementImportModel
+
+    init(store: TransactionStore) {
+        _ledger = State(initialValue: LedgerModel(store: store))
+        _importModel = State(initialValue: StatementImportModel(store: store))
+    }
 
     var body: some View {
         NavigationStack {
             content
-                .navigationTitle("Trag")
+                .navigationTitle(Text(verbatim: "Trag"))
                 .toolbar {
-                    if case .loaded = importModel.state {
-                        Button("Import statement", systemImage: "square.and.arrow.down") {
-                            importModel.isPickerPresented = true
+                    if !ledger.isEmpty {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button("Import statement", systemImage: "square.and.arrow.down") {
+                                importModel.isPickerPresented = true
+                            }
                         }
                     }
                 }
-                .fileImporter(isPresented: $importModel.isPickerPresented, allowedContentTypes: [.pdf]) { result in
-                    Task { await importModel.importFile(result) }
-                }
         }
+        .fileImporter(isPresented: $importModel.isPickerPresented, allowedContentTypes: [.pdf]) { result in
+            Task {
+                await importModel.importFile(result)
+                ledger.reload()
+            }
+        }
+        .safeAreaInset(edge: .bottom) {
+            if case .finished(let outcome) = importModel.state {
+                ImportOutcomeBanner(outcome: outcome) { importModel.dismissOutcome() }
+                    .padding()
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .task(id: outcome) {
+                        // Successful imports confirm briefly; warnings stay until dismissed.
+                        guard outcome.totalsMatch else { return }
+                        try? await Task.sleep(for: .seconds(4))
+                        importModel.dismissOutcome()
+                    }
+            }
+        }
+        .animation(.default, value: importModel.state)
+        .task { ledger.reload() }
     }
 
     @ViewBuilder
     private var content: some View {
-        switch importModel.state {
-        case .empty:
-            ImportPromptView { importModel.isPickerPresented = true }
-        case .importing:
+        if case .importing = importModel.state {
             ProgressView("Reading statement…")
-        case .loaded(let statement):
-            StatementView(statement: statement)
-        case .failed(let failure):
+        } else if case .failed(let failure) = importModel.state, ledger.isEmpty {
             ImportFailureView(failure: failure) { importModel.isPickerPresented = true }
+        } else if ledger.isEmpty {
+            ImportPromptView { importModel.isPickerPresented = true }
+        } else {
+            MonthOverviewView(ledger: ledger)
         }
     }
 }
 
-#Preview {
-    RootView()
+#Preview("With data") {
+    RootView(store: .preview())
+}
+
+#Preview("Empty") {
+    RootView(store: .preview(empty: true))
 }

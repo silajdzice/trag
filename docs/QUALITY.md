@@ -19,7 +19,7 @@ Trag is a portfolio app: the code will be read by hiring managers. Every merged 
 - SwiftUI only; system components first, custom only when there's a reason.
 - Every screen has loading, empty, error and content states, and a `#Preview` for each with sample data.
 - Accessibility: Dynamic Type up to AX5, VoiceOver labels for amounts and charts, sufficient contrast, no information conveyed by color alone.
-- Light/dark mode; strings in a String Catalog (English first, Bosnian next).
+- Light/dark mode. Every user-facing string lives in `Localizable.xcstrings` with English and Bosnian (plural variants where counts appear); `scripts/check-localization.py` fails on missing or untranslated keys. Money, dates and months use the user's locale. Packages hold no UI strings.
 
 ## Testing
 - Swift Testing for packages; each bank parser has sanitized interpreter tests plus footer-total validation against private statements.

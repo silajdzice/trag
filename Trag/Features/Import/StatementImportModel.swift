@@ -3,22 +3,24 @@ import OSLog
 import Observation
 import StatementParsing
 
+/// Picks a statement file, parses it off the main actor and saves it.
 @Observable
 final class StatementImportModel {
-    enum State {
-        case empty
+    enum State: Equatable {
+        case idle
         case importing
-        case loaded(ParsedStatement)
+        case finished(ImportOutcome)
         case failed(ImportFailure)
     }
 
-    private(set) var state: State
+    private(set) var state: State = .idle
     var isPickerPresented = false
 
     private let importer: StatementImporter
+    private let store: TransactionStore
 
-    init(state: State = .empty, importer: StatementImporter = StatementImporter()) {
-        self.state = state
+    init(store: TransactionStore, importer: StatementImporter = StatementImporter()) {
+        self.store = store
         self.importer = importer
     }
 
@@ -30,13 +32,23 @@ final class StatementImportModel {
 
         do {
             let statement = try await importer.importStatement(from: url)
-            Log.import.info("Imported \(statement.bankName, privacy: .public) statement with \(statement.transactions.count) transactions")
-            state = .loaded(statement)
+            let saved = try store.save(statement)
+            Log.import.info("Imported \(statement.bankName, privacy: .public): \(saved.inserted) new, \(saved.alreadyImported) existing")
+            state = .finished(ImportOutcome(result: saved, totalsMatch: statement.matchesReportedTotals))
         } catch {
             Log.import.error("Import failed: \(String(describing: error), privacy: .public)")
             state = .failed(ImportFailure(error))
         }
     }
+
+    func dismissOutcome() {
+        state = .idle
+    }
+}
+
+struct ImportOutcome: Hashable {
+    let result: TransactionStore.ImportResult
+    let totalsMatch: Bool
 }
 
 struct ImportFailure: Error, Equatable {
@@ -51,14 +63,19 @@ struct ImportFailure: Error, Equatable {
     init(_ error: any Error) {
         switch error as? StatementParsingError {
         case .unsupportedBank:
-            self.init(title: "Bank not supported yet", message: "Trag can read Union banka statements today. More banks are coming.")
+            self.init(
+                title: String(localized: "Bank not supported yet"),
+                message: String(localized: "Trag can read Union banka statements today. More banks are coming."))
         case .unreadableDocument:
-            self.init(title: "Couldn't open the file", message: "Make sure it's a PDF statement downloaded from your bank.")
+            self.init(
+                title: String(localized: "Couldn't open the file"),
+                message: String(localized: "Make sure it's a PDF statement downloaded from your bank."))
         case .noTransactionsFound:
             self.init(
-                title: "No transactions found", message: "The statement looks empty or its layout is different from what Trag expects.")
+                title: String(localized: "No transactions found"),
+                message: String(localized: "The statement looks empty or its layout is different from what Trag expects."))
         case nil:
-            self.init(title: "Something went wrong", message: error.localizedDescription)
+            self.init(title: String(localized: "Something went wrong"), message: error.localizedDescription)
         }
     }
 }

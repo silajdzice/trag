@@ -1,0 +1,558 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "%@, received %@": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@, primljeno %@"
+          }
+        }
+      }
+    },
+    "%@, spent %@": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@, potrošeno %@"
+          }
+        }
+      }
+    },
+    "%lld new transactions": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld new transaction"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld new transactions"
+                }
+              }
+            }
+          }
+        },
+        "bs": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld nova transakcija"
+                }
+              },
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld nove transakcije"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld novih transakcija"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld transactions": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld transaction"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld transactions"
+                }
+              }
+            }
+          }
+        },
+        "bs": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld transakcija"
+                }
+              },
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld transakcije"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld transakcija"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Applies to all transactions from %@.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Primjenjuje se na sve transakcije od %@."
+          }
+        }
+      }
+    },
+    "Bank fees": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bankarske naknade"
+          }
+        }
+      }
+    },
+    "Bank not supported yet": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Banka još nije podržana"
+          }
+        }
+      }
+    },
+    "Cancel": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Odustani"
+          }
+        }
+      }
+    },
+    "Cash": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gotovina"
+          }
+        }
+      }
+    },
+    "Categories": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kategorije"
+          }
+        }
+      }
+    },
+    "Category": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kategorija"
+          }
+        }
+      }
+    },
+    "Change category": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Promijeni kategoriju"
+          }
+        }
+      }
+    },
+    "Choose another file": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Odaberi drugi fajl"
+          }
+        }
+      }
+    },
+    "Couldn't load your saved transactions.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nije moguće učitati sačuvane transakcije."
+          }
+        }
+      }
+    },
+    "Couldn't open the file": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fajl nije moguće otvoriti"
+          }
+        }
+      }
+    },
+    "Dismiss": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zatvori"
+          }
+        }
+      }
+    },
+    "Eating out": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hrana vani i dostava"
+          }
+        }
+      }
+    },
+    "Entertainment": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zabava"
+          }
+        }
+      }
+    },
+    "Groceries": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Namirnice"
+          }
+        }
+      }
+    },
+    "Health": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zdravlje"
+          }
+        }
+      }
+    },
+    "Housing": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stanovanje"
+          }
+        }
+      }
+    },
+    "Import a bank statement PDF. Everything stays on this iPhone.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uvezi PDF izvod iz banke. Sve ostaje na ovom iPhoneu."
+          }
+        }
+      }
+    },
+    "Import statement": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uvezi izvod"
+          }
+        }
+      }
+    },
+    "Income": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prihodi"
+          }
+        }
+      }
+    },
+    "Kids": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Djeca"
+          }
+        }
+      }
+    },
+    "Make sure it's a PDF statement downloaded from your bank.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Provjeri da je to PDF izvod preuzet iz tvoje banke."
+          }
+        }
+      }
+    },
+    "Month": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mjesec"
+          }
+        }
+      }
+    },
+    "No statement yet": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Još nema izvoda"
+          }
+        }
+      }
+    },
+    "No transactions found": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nisu pronađene transakcije"
+          }
+        }
+      }
+    },
+    "On-device AI available": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI na uređaju je dostupan"
+          }
+        }
+      }
+    },
+    "On-device AI unavailable. Insights still work.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI na uređaju nije dostupan. Analize i dalje rade."
+          }
+        }
+      }
+    },
+    "Other": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ostalo"
+          }
+        }
+      }
+    },
+    "Personal care": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lična njega"
+          }
+        }
+      }
+    },
+    "Pets": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ljubimci"
+          }
+        }
+      }
+    },
+    "Phone & internet": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Telefon i internet"
+          }
+        }
+      }
+    },
+    "Reading statement…": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Čitam izvod…"
+          }
+        }
+      }
+    },
+    "Shopping": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kupovina"
+          }
+        }
+      }
+    },
+    "Some rows may be missing from this statement.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neke stavke s ovog izvoda možda nedostaju."
+          }
+        }
+      }
+    },
+    "Something went wrong": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nešto nije u redu"
+          }
+        }
+      }
+    },
+    "Spent": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Potrošeno"
+          }
+        }
+      }
+    },
+    "Subscriptions": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pretplate"
+          }
+        }
+      }
+    },
+    "The statement looks empty or its layout is different from what Trag expects.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Izvod je prazan ili izgleda drugačije nego što Trag očekuje."
+          }
+        }
+      }
+    },
+    "This statement was already imported": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ovaj izvod je već uvezen"
+          }
+        }
+      }
+    },
+    "Top places": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gdje najviše trošiš"
+          }
+        }
+      }
+    },
+    "Trag can read Union banka statements today. More banks are coming.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trag trenutno čita izvode Union banke. Uskoro stižu i druge banke."
+          }
+        }
+      }
+    },
+    "Transactions": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transakcije"
+          }
+        }
+      }
+    },
+    "Transport": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prevoz"
+          }
+        }
+      }
+    },
+    "Utilities": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Režije"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

@@ -3,39 +3,55 @@
     import StatementParsing
 
     extension ParsedStatement {
-        /// Fake data for SwiftUI previews.
+        /// Fake data for previews and UI development.
         static let preview: ParsedStatement = {
-            func tx(_ id: String, _ day: Int, _ amount: Decimal, _ who: String, _ kind: BankTransaction.Kind) -> BankTransaction {
+            let calendar = Calendar.current
+            func tx(_ id: String, _ month: Int, _ day: Int, _ amount: Decimal, _ who: String, _ kind: BankTransaction.Kind)
+                -> BankTransaction
+            {
                 BankTransaction(
                     id: id,
-                    bookingDate: Calendar.current.date(from: DateComponents(year: 2026, month: 9, day: day)) ?? .now,
-                    valueDate: nil,
-                    amount: amount,
-                    currency: "BAM",
-                    kind: kind,
-                    counterparty: who,
-                    description: "",
-                    reference: id
-                )
+                    bookingDate: calendar.date(from: DateComponents(year: 2026, month: month, day: day, hour: 12)) ?? .now,
+                    valueDate: nil, amount: amount, currency: "BAM", kind: kind,
+                    counterparty: who, description: "", reference: id)
             }
             let transactions = [
-                tx("1", 2, -42.30, "KONZUM BIH", .cardPurchase),
-                tx("2", 3, -14.41, "YouTube Premium", .cardPurchase),
-                tx("3", 5, -180, "ATM", .cashWithdrawal),
-                tx("4", 5, -1, "Union banka", .fee),
-                tx("5", 21, -93.26, "Elektroprivreda BiH", .billPayment),
-                tx("6", 30, 2000, "ACME DOO", .income),
+                tx("1", 9, 2, -42.30, "KONZUM BIH", .cardPurchase),
+                tx("2", 9, 3, -14.41, "GOOGLE *YouTubePremium", .cardPurchase),
+                tx("3", 9, 5, -180, "ATM 090101", .cashWithdrawal),
+                tx("4", 9, 5, -1, "Union banka", .fee),
+                tx("5", 9, 10, -66, "CINEPLEXX BH SARAJEVO", .cardPurchase),
+                tx("6", 9, 12, -80, "VETERINARSKA STANICA", .cardPurchase),
+                tx("7", 9, 21, -93.26, "JP ELEKTROPRIVREDA BIH DD SARAJEVO", .billPayment),
+                tx("8", 9, 22, -218.33, "UNKNOWN SHOP DOO", .cardPurchase),
+                tx("9", 9, 30, 2000, "ACME DOO", .income),
+                tx("10", 8, 14, -55.10, "BINGO D.O.O.", .cardPurchase),
+                tx("11", 8, 30, 2000, "ACME DOO", .income),
             ]
             return ParsedStatement(
-                bankName: "Union banka",
-                currency: "BAM",
-                periodStart: nil,
-                periodEnd: nil,
-                openingBalance: 1000,
-                closingBalance: 2668.03,
-                transactions: transactions,
-                reportedTotals: (debit: 330.97, credit: 2000)
-            )
+                bankName: "Preview Bank", currency: "BAM", periodStart: nil, periodEnd: nil,
+                openingBalance: nil, closingBalance: nil, transactions: transactions, reportedTotals: nil)
         }()
+    }
+
+    extension TransactionStore {
+        /// In-memory store, optionally filled with `ParsedStatement.preview`.
+        static func preview(empty: Bool = false) -> TransactionStore {
+            do {
+                let store = TransactionStore(container: try makeContainer(inMemory: true))
+                if !empty { _ = try store.save(.preview) }
+                return store
+            } catch {
+                fatalError("Preview store failed: \(error)")
+            }
+        }
+    }
+
+    extension LedgerModel {
+        static func preview() -> LedgerModel {
+            let ledger = LedgerModel(store: .preview())
+            ledger.reload()
+            return ledger
+        }
     }
 #endif

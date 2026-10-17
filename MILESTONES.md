@@ -12,17 +12,17 @@ Assumes about 15–20 h/week alongside your job and applications. Each milestone
 - [x] Feature folders, @Observable models, async import off the main actor
 - [x] swift-format + scripts/check.sh (warnings as errors), docs/QUALITY.md, CLAUDE.md
 - [x] Privacy manifest, os.Logger without personal data, previews with fake data
-- [ ] App unit-test target for feature models (with M1)
-- [ ] String Catalog (with Bosnian UI)
+- [x] App unit-test target for feature models
+- [x] String Catalog: English + Bosnian (with plurals), checked by scripts/check-localization.py
 - [ ] GitHub Actions running scripts/check.sh (when the repo goes on GitHub)
 - [ ] UI smoke test for the import flow (with the dashboard)
 
 ## M1: Import + transactions (week 1–2)
-- [x] Union banka parser, unit-tested against the real (anonymized) statement
-- [ ] Generic CSV import with column mapping
-- [ ] SwiftData model: Transaction, Category, MerchantRule
-- [ ] Transactions list + manual category correction (remembered per merchant)
-- [ ] Rule-based categories (no AI yet)
+- [x] Union banka parser, unit-tested; handles rows split across pages (validated on Jul–Sep statements) against the real (anonymized) statement
+- [ ] Generic CSV import with column mapping (moved to after V1: no CSV-only bank yet)
+- [x] SwiftData model: StoredTransaction, CategoryOverride; re-import never duplicates
+- [x] Transactions list + manual category correction (remembered per merchant)
+- [x] Rule-based categories (no AI yet): 81% of real spending categorised by rules alone
 
 ## M2: Insights core (week 2–3)
 - [ ] Spend by category, top merchants, month vs month
