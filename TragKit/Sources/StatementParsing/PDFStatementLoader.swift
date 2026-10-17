@@ -44,6 +44,14 @@
             }
         }
 
+        func lines(in rect: CGRect) -> [TextLine] {
+            let selection = page.selection(for: rect.applying(pageToDisplay.inverted()))
+            return (selection?.selectionsByLine() ?? []).compactMap { line in
+                guard let text = line.string?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty else { return nil }
+                return TextLine(text: text, frame: line.bounds(for: page).applying(pageToDisplay))
+            }
+        }
+
         func text(in rect: CGRect) -> String {
             let pageRect = rect.applying(pageToDisplay.inverted())
             let raw = page.selection(for: pageRect)?.string ?? ""

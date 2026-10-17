@@ -19,6 +19,8 @@ public protocol StatementPage: Sendable {
     var lines: [TextLine] { get }
     /// Exact text inside a rectangle in display coordinates.
     func text(in rect: CGRect) -> String
+    /// Lines of text inside a rectangle, each with its own frame. Used to read one table column at a time.
+    func lines(in rect: CGRect) -> [TextLine]
 }
 
 public struct StatementDocument: Sendable {

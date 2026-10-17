@@ -55,6 +55,36 @@ public struct UnionBankaRow: Sendable, Hashable {
     }
 }
 
+extension UnionBankaRow {
+    /// Builds a row from column cells in `UnionBankaLayout.Columns.all` order.
+    init(cells: [[String]]) {
+        func joined(_ index: Int) -> String { cells[index].joined(separator: "\n") }
+        self.init(
+            reference: joined(0).firstMatch(of: /\d{6,12}/).map { String($0.output) } ?? "",
+            bookingDate: cells[1].first ?? "",
+            valueDate: cells[2].first ?? "",
+            payee: joined(3),
+            description: joined(4),
+            debit: joined(5),
+            credit: joined(6)
+        )
+    }
+
+    /// Adds text that continued onto the next page.
+    func appending(_ continuation: UnionBankaRow) -> UnionBankaRow {
+        func merge(_ a: String, _ b: String) -> String { [a, b].filter { !$0.isEmpty }.joined(separator: "\n") }
+        return UnionBankaRow(
+            reference: reference.isEmpty ? continuation.reference : reference,
+            bookingDate: bookingDate.isEmpty ? continuation.bookingDate : bookingDate,
+            valueDate: valueDate.isEmpty ? continuation.valueDate : valueDate,
+            payee: merge(payee, continuation.payee),
+            description: merge(description, continuation.description),
+            debit: merge(debit, continuation.debit),
+            credit: merge(credit, continuation.credit)
+        )
+    }
+}
+
 // MARK: - Layout: positions → rows
 
 enum UnionBankaLayout {
@@ -67,49 +97,67 @@ enum UnionBankaLayout {
         let description = 392.0..<598.0
         let debit = 598.0..<668.0
         let credit = 668.0..<842.0
+
+        /// Column order matches `UnionBankaRow(cells:)`.
+        static let all: [Range<Double>] = {
+            let c = Columns()
+            return [c.reference, c.bookingDate, c.valueDate, c.payee, c.description, c.debit, c.credit]
+        }()
     }
 
     static let columns = Columns()
     private static var referencePattern: Regex<Substring> { /^\d{6,12}\b/ }
+    private static var accountNumber: Regex<Substring> { /\d{13,16}/ }
+    private static var pageNumber: Regex<Substring> { /\d+\/\d+/ }
 
+    /// Splits the table into rows using the payer/payee column: every row's block starts with an account number.
+    /// Lines are assigned to rows by their vertical centre, so tall rows (bill payments with addresses) don't
+    /// leak into their neighbours. Lines above the first row of a page continue the previous page's last row.
     static func rows(in document: StatementDocument) -> [UnionBankaRow] {
         var rows: [UnionBankaRow] = []
         for page in document.pages {
-            let anchors = page.lines
-                .filter { $0.frame.minX < columns.reference.upperBound && $0.text.firstMatch(of: referencePattern) != nil }
-                .map(\.frame.midY)
-                .sorted()
-            guard !anchors.isEmpty else { continue }
+            let headerBottom = page.lines.first { $0.text.contains("Nalogodavac") }.map { $0.frame.maxY + 4 } ?? 0
+            let footerTop = page.lines.first { $0.text.hasPrefix("Ukupno") }?.frame.minY ?? page.size.height
+            guard headerBottom < footerTop else { continue }
 
-            let headerBottom = page.lines.first { $0.text.contains("Nalogodavac") }.map { $0.frame.maxY + 8 } ?? 40
-            let footerTop = page.lines.first { $0.text.hasPrefix("Ukupno") }?.frame.minY ?? page.size.height - 25
-
-            for (index, y) in anchors.enumerated() {
-                let previous = index > 0 ? (anchors[index - 1] + y) / 2 : max(headerBottom, y - 30)
-                let next = index < anchors.count - 1 ? (anchors[index + 1] + y) / 2 : min(footerTop - 1, y + 25)
-                let band = previous..<next
-
-                func cell(_ x: Range<Double>) -> String {
-                    page.text(
-                        in: CGRect(
-                            x: x.lowerBound, y: band.lowerBound, width: x.upperBound - x.lowerBound,
-                            height: band.upperBound - band.lowerBound))
-                }
-
-                let reference = cell(columns.reference).firstMatch(of: referencePattern).map { String($0.output) } ?? ""
-                rows.append(
-                    UnionBankaRow(
-                        reference: reference,
-                        bookingDate: cell(columns.bookingDate),
-                        valueDate: cell(columns.valueDate),
-                        payee: cell(columns.payee),
-                        description: cell(columns.description),
-                        debit: cell(columns.debit),
-                        credit: cell(columns.credit)
-                    ))
+            func columnLines(_ x: Range<Double>) -> [TextLine] {
+                let rect = CGRect(x: x.lowerBound, y: headerBottom, width: x.upperBound - x.lowerBound, height: footerTop - headerBottom)
+                return page.lines(in: rect)
+                    .filter { (headerBottom..<footerTop).contains($0.frame.midY) && $0.text.wholeMatch(of: pageNumber) == nil }
+                    .sorted { $0.frame.midY < $1.frame.midY }
             }
+
+            let payee = columnLines(columns.payee)
+            let blockStarts = payee.indices.filter { payee[$0].text.wholeMatch(of: accountNumber) != nil }
+            let boundaries = rowBoundaries(payee: payee, blockStarts: blockStarts)
+
+            var cells = Array(repeating: Array(repeating: [String](), count: Columns.all.count), count: blockStarts.count)
+            var continuation = Array(repeating: [String](), count: Columns.all.count)
+            for (column, range) in Columns.all.enumerated() {
+                for line in columnLines(range) {
+                    if let row = boundaries.lastIndex(where: { $0 <= line.frame.midY }) {
+                        cells[row][column].append(line.text)
+                    } else {
+                        continuation[column].append(line.text)
+                    }
+                }
+            }
+
+            if let last = rows.indices.last, continuation.contains(where: { !$0.isEmpty }) {
+                rows[last] = rows[last].appending(UnionBankaRow(cells: continuation))
+            }
+            rows += cells.map(UnionBankaRow.init(cells:))
         }
         return rows
+    }
+
+    /// Top edge of each row: halfway between one payee block's last line and the next block's first line.
+    static func rowBoundaries(payee: [TextLine], blockStarts: [Int]) -> [Double] {
+        blockStarts.enumerated().map { index, start in
+            guard index > 0 else { return payee[start].frame.minY - 3 }
+            let previousBottom = payee[start - 1].frame.maxY
+            return (previousBottom + payee[start].frame.minY) / 2
+        }
     }
 
     struct Header {
