@@ -4,7 +4,7 @@ import SwiftUI
 struct TragApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView()
         }
     }
 }

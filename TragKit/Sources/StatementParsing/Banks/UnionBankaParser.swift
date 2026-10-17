@@ -42,7 +42,9 @@ public struct UnionBankaRow: Sendable, Hashable {
     public var debit: String
     public var credit: String
 
-    public init(reference: String, bookingDate: String, valueDate: String, payee: String, description: String, debit: String, credit: String) {
+    public init(
+        reference: String, bookingDate: String, valueDate: String, payee: String, description: String, debit: String, credit: String
+    ) {
         self.reference = reference
         self.bookingDate = bookingDate
         self.valueDate = valueDate
@@ -88,19 +90,23 @@ enum UnionBankaLayout {
                 let band = previous..<next
 
                 func cell(_ x: Range<Double>) -> String {
-                    page.text(in: CGRect(x: x.lowerBound, y: band.lowerBound, width: x.upperBound - x.lowerBound, height: band.upperBound - band.lowerBound))
+                    page.text(
+                        in: CGRect(
+                            x: x.lowerBound, y: band.lowerBound, width: x.upperBound - x.lowerBound,
+                            height: band.upperBound - band.lowerBound))
                 }
 
                 let reference = cell(columns.reference).firstMatch(of: referencePattern).map { String($0.output) } ?? ""
-                rows.append(UnionBankaRow(
-                    reference: reference,
-                    bookingDate: cell(columns.bookingDate),
-                    valueDate: cell(columns.valueDate),
-                    payee: cell(columns.payee),
-                    description: cell(columns.description),
-                    debit: cell(columns.debit),
-                    credit: cell(columns.credit)
-                ))
+                rows.append(
+                    UnionBankaRow(
+                        reference: reference,
+                        bookingDate: cell(columns.bookingDate),
+                        valueDate: cell(columns.valueDate),
+                        payee: cell(columns.payee),
+                        description: cell(columns.description),
+                        debit: cell(columns.debit),
+                        credit: cell(columns.credit)
+                    ))
             }
         }
         return rows
@@ -121,7 +127,10 @@ enum UnionBankaLayout {
 
         if let first = document.pages.first {
             if let line = first.lines.first(where: { $0.text.hasPrefix("Prethodno stanje") }) {
-                let text = first.text(in: CGRect(x: line.frame.minX, y: line.frame.minY - 2, width: first.size.width - line.frame.minX, height: line.frame.height + 4))
+                let text = first.text(
+                    in: CGRect(
+                        x: line.frame.minX, y: line.frame.minY - 2, width: first.size.width - line.frame.minX, height: line.frame.height + 4
+                    ))
                 header.openingBalance = text.firstMatch(of: numberPattern).flatMap { LocalFormat.decimal(String($0.output)) }
             }
             if first.lines.contains(where: { $0.text.contains("EUR") && $0.text.hasPrefix("VALUTA") }) { header.currency = "EUR" }
@@ -133,12 +142,16 @@ enum UnionBankaLayout {
                 let debit = page.text(in: band.intersection(rect(columns.debit, page))).firstMatch(of: numberPattern)
                 let credit = page.text(in: band.intersection(rect(columns.credit, page))).firstMatch(of: numberPattern)
                 if let debit = debit.flatMap({ LocalFormat.decimal(String($0.output)) }),
-                   let credit = credit.flatMap({ LocalFormat.decimal(String($0.output)) }) {
+                    let credit = credit.flatMap({ LocalFormat.decimal(String($0.output)) })
+                {
                     header.totals = (debit, credit)
                 }
             }
             if let line = page.lines.first(where: { $0.text.hasPrefix("Saldo") }) {
-                let text = page.text(in: CGRect(x: line.frame.minX, y: line.frame.minY - 2, width: page.size.width - line.frame.minX, height: line.frame.height + 4))
+                let text = page.text(
+                    in: CGRect(
+                        x: line.frame.minX, y: line.frame.minY - 2, width: page.size.width - line.frame.minX, height: line.frame.height + 4)
+                )
                 header.closingBalance = text.firstMatch(of: numberPattern).flatMap { LocalFormat.decimal(String($0.output)) }
             }
             let allText = page.lines.map(\.text).joined(separator: " ")
@@ -162,7 +175,7 @@ public enum UnionBankaInterpreter {
     private static var originalAmount: Regex<(Substring, Substring, Substring)> { /\((\d+(?:\.\d+)?) ([A-Z]{3})\)/ }
     private static var accountNumber: Regex<Substring> { /^\d{13,16}$/ }
 
-    public static func transactions(from rows: [UnionBankaRow], currency: String) -> [Transaction] {
+    public static func transactions(from rows: [UnionBankaRow], currency: String) -> [BankTransaction] {
         var seen: [String: Int] = [:]
         let referenceCounts = Dictionary(grouping: rows, by: \.reference).mapValues(\.count)
 
@@ -172,8 +185,11 @@ public enum UnionBankaInterpreter {
             guard debit != 0 || credit != 0, let bookingDate = LocalFormat.date(row.bookingDate) else { return nil }
 
             let description = LocalFormat.collapseWhitespace(row.description.replacingOccurrences(of: "\n", with: " "))
-            let payeeLines = row.payee.components(separatedBy: .newlines).map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
-            let payeeName = payeeLines.firstIndex(where: { $0.firstMatch(of: accountNumber) != nil })
+            let payeeLines = row.payee.components(separatedBy: .newlines).map { $0.trimmingCharacters(in: .whitespaces) }.filter {
+                !$0.isEmpty
+            }
+            let payeeName =
+                payeeLines.firstIndex(where: { $0.firstMatch(of: accountNumber) != nil })
                 .flatMap { payeeLines.indices.contains($0 + 1) ? payeeLines[$0 + 1] : nil }
                 ?? payeeLines.first ?? ""
 
@@ -181,11 +197,12 @@ public enum UnionBankaInterpreter {
             // Bill payments come with a second, small row under the same reference: the bank's fee.
             if kind == .billPayment, (referenceCounts[row.reference] ?? 0) > 1, debit <= 1 { kind = .fee }
 
-            let counterparty: String = switch kind {
-            case .cardPurchase, .cashWithdrawal: merchant(from: description) ?? payeeName
-            case .fee: "Union banka"
-            default: payeeName
-            }
+            let counterparty: String =
+                switch kind {
+                case .cardPurchase, .cashWithdrawal: merchant(from: description) ?? payeeName
+                case .fee: "Union banka"
+                default: payeeName
+                }
 
             let original = description.firstMatch(of: originalAmount).flatMap { match -> Money? in
                 guard let amount = Decimal(string: String(match.output.1), locale: Locale(identifier: "en_US_POSIX")) else { return nil }
@@ -195,7 +212,7 @@ public enum UnionBankaInterpreter {
             let occurrence = seen[row.reference, default: 0]
             seen[row.reference] = occurrence + 1
 
-            return Transaction(
+            return BankTransaction(
                 id: occurrence == 0 ? row.reference : "\(row.reference)-\(occurrence)",
                 bookingDate: bookingDate,
                 valueDate: LocalFormat.date(row.valueDate),
@@ -210,7 +227,7 @@ public enum UnionBankaInterpreter {
         }
     }
 
-    static func kind(description: String, credit: Decimal) -> Transaction.Kind {
+    static func kind(description: String, credit: Decimal) -> BankTransaction.Kind {
         if description.hasPrefix("Naknada") { return .fee }
         if description.contains("Podizanje gotovine") { return .cashWithdrawal }
         if description.contains("Kupovina na POS") { return .cardPurchase }

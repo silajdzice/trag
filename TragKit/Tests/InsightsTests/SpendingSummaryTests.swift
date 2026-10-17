@@ -1,12 +1,14 @@
 import Foundation
-import Testing
 import StatementParsing
+import Testing
+
 @testable import Insights
 
 @Suite struct SpendingSummaryTests {
-    private func tx(_ amount: Decimal, _ who: String, _ kind: Transaction.Kind = .cardPurchase) -> Transaction {
-        Transaction(id: UUID().uuidString, bookingDate: .now, valueDate: nil, amount: amount, currency: "BAM",
-                    kind: kind, counterparty: who, description: "", reference: "r")
+    private func tx(_ amount: Decimal, _ who: String, _ kind: BankTransaction.Kind = .cardPurchase) -> BankTransaction {
+        BankTransaction(
+            id: UUID().uuidString, bookingDate: .now, valueDate: nil, amount: amount, currency: "BAM",
+            kind: kind, counterparty: who, description: "", reference: "r")
     }
 
     @Test func totalsAndTopCounterparty() {

@@ -1,34 +1,42 @@
 import Foundation
 import Testing
+
 @testable import StatementParsing
 
 /// Sanitized rows: same structure as a real Union banka statement, fake personal data.
 private let rows: [UnionBankaRow] = [
-    .init(reference: "100000001", bookingDate: "02.09.2026.", valueDate: "31.08.2026.",
-          payee: "1029999800001237\nSPARKASSE BANK D.D.",
-          description: "Kupovina na POS terminalu van BC, unutar BH\n4860271*****0000 KONZUM BIH P-242",
-          debit: "4,00", credit: "0,00"),
-    .init(reference: "100000002", bookingDate: "07.09.2026.", valueDate: "02.09.2026.",
-          payee: "1029999800001237\nSPARKASSE BANK D.D.",
-          description: "Kupovina na POS terminalu van BH 4860271*****0000\nBattle.net (12.99 EUR)",
-          debit: "25,41", credit: "0,00"),
-    .init(reference: "100000003", bookingDate: "07.09.2026.", valueDate: "02.09.2026.",
-          payee: "1000000000000001\nJOHN DOE",
-          description: "Naknada za VISA konverziju - Kupovina na POS\nterminalu van BH 4860271*****0000 (12.99 EUR)",
-          debit: "0,25", credit: "0,00"),
-    .init(reference: "100000004", bookingDate: "02.09.2026.", valueDate: "01.09.2026.",
-          payee: "1000000000000001\nJOHN DOE",
-          description: "Podizanje gotovine na ATM-u BH mreža\n4860271*****0000 ATM 090101 AMKO KOMERC NC",
-          debit: "180,00", credit: "0,00"),
-    .init(reference: "100000005", bookingDate: "21.09.2026.", valueDate: "21.09.2026.",
-          payee: "1413065320199704\nKJKP VODOVOD I KANALIZACIJA DOO\nSARAJEVO",
-          description: "00000000-000000-0 Racun za vodu", debit: "20,30", credit: "0,00"),
-    .init(reference: "100000005", bookingDate: "21.09.2026.", valueDate: "21.09.2026.",
-          payee: "1413065320199704\nKJKP VODOVOD I KANALIZACIJA DOO\nSARAJEVO",
-          description: "00000000-000000-0 Racun za vodu", debit: "0,75", credit: "0,00"),
-    .init(reference: "100000006", bookingDate: "30.09.2026.", valueDate: "30.09.2026.",
-          payee: "1610000000000001\nACME DOO\nSARAJEVO",
-          description: "PLACA ZA 9 2026", debit: "0,00", credit: "2.000,00"),
+    .init(
+        reference: "100000001", bookingDate: "02.09.2026.", valueDate: "31.08.2026.",
+        payee: "1029999800001237\nSPARKASSE BANK D.D.",
+        description: "Kupovina na POS terminalu van BC, unutar BH\n4860271*****0000 KONZUM BIH P-242",
+        debit: "4,00", credit: "0,00"),
+    .init(
+        reference: "100000002", bookingDate: "07.09.2026.", valueDate: "02.09.2026.",
+        payee: "1029999800001237\nSPARKASSE BANK D.D.",
+        description: "Kupovina na POS terminalu van BH 4860271*****0000\nBattle.net (12.99 EUR)",
+        debit: "25,41", credit: "0,00"),
+    .init(
+        reference: "100000003", bookingDate: "07.09.2026.", valueDate: "02.09.2026.",
+        payee: "1000000000000001\nJOHN DOE",
+        description: "Naknada za VISA konverziju - Kupovina na POS\nterminalu van BH 4860271*****0000 (12.99 EUR)",
+        debit: "0,25", credit: "0,00"),
+    .init(
+        reference: "100000004", bookingDate: "02.09.2026.", valueDate: "01.09.2026.",
+        payee: "1000000000000001\nJOHN DOE",
+        description: "Podizanje gotovine na ATM-u BH mreža\n4860271*****0000 ATM 090101 AMKO KOMERC NC",
+        debit: "180,00", credit: "0,00"),
+    .init(
+        reference: "100000005", bookingDate: "21.09.2026.", valueDate: "21.09.2026.",
+        payee: "1413065320199704\nKJKP VODOVOD I KANALIZACIJA DOO\nSARAJEVO",
+        description: "00000000-000000-0 Racun za vodu", debit: "20,30", credit: "0,00"),
+    .init(
+        reference: "100000005", bookingDate: "21.09.2026.", valueDate: "21.09.2026.",
+        payee: "1413065320199704\nKJKP VODOVOD I KANALIZACIJA DOO\nSARAJEVO",
+        description: "00000000-000000-0 Racun za vodu", debit: "0,75", credit: "0,00"),
+    .init(
+        reference: "100000006", bookingDate: "30.09.2026.", valueDate: "30.09.2026.",
+        payee: "1610000000000001\nACME DOO\nSARAJEVO",
+        description: "PLACA ZA 9 2026", debit: "0,00", credit: "2.000,00"),
 ]
 
 @Suite struct UnionBankaInterpreterTests {

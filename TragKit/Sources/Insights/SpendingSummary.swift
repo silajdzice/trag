@@ -13,10 +13,10 @@ public struct SpendingSummary: Sendable {
     public let totalSpent: Decimal
     public let totalIncome: Decimal
     public let byCounterparty: [Line]
-    public let byKind: [Transaction.Kind: Decimal]
+    public let byKind: [BankTransaction.Kind: Decimal]
     public let fees: Decimal
 
-    public init(transactions: [Transaction]) {
+    public init(transactions: [BankTransaction]) {
         let expenses = transactions.filter(\.isExpense)
         totalSpent = expenses.reduce(0) { $0 - $1.amount }
         totalIncome = transactions.filter { !$0.isExpense }.reduce(0) { $0 + $1.amount }

@@ -1,7 +1,7 @@
 import Foundation
 
 /// A single movement on a bank account, normalised across banks.
-public struct Transaction: Sendable, Hashable, Identifiable {
+public struct BankTransaction: Sendable, Hashable, Identifiable {
     public enum Kind: String, Sendable, Hashable, Codable {
         case cardPurchase
         case cashWithdrawal
@@ -71,7 +71,7 @@ public struct ParsedStatement: Sendable {
     public let periodEnd: Date?
     public let openingBalance: Decimal?
     public let closingBalance: Decimal?
-    public let transactions: [Transaction]
+    public let transactions: [BankTransaction]
     /// Totals printed on the statement, used to validate the parse.
     public let reportedTotals: (debit: Decimal, credit: Decimal)?
 
@@ -82,7 +82,7 @@ public struct ParsedStatement: Sendable {
         periodEnd: Date?,
         openingBalance: Decimal?,
         closingBalance: Decimal?,
-        transactions: [Transaction],
+        transactions: [BankTransaction],
         reportedTotals: (debit: Decimal, credit: Decimal)?
     ) {
         self.bankName = bankName

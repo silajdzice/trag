@@ -3,7 +3,8 @@ import Foundation
 enum LocalFormat {
     /// Parses "1.234,56" or "4,00" (dot thousands, comma decimals).
     static func decimal(_ string: String) -> Decimal? {
-        let cleaned = string
+        let cleaned =
+            string
             .trimmingCharacters(in: .whitespaces)
             .replacingOccurrences(of: ".", with: "")
             .replacingOccurrences(of: ",", with: ".")
