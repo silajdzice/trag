@@ -8,6 +8,15 @@ Assumes about 15–20 h/week alongside your job and applications. Each milestone
 - [x] Create the Xcode project + SPM packages (`StatementParsing`, `Insights`, `AICoach`), public GitHub repo, README stub
 - [ ] Quick spike: call the Foundation Model in the Simulator and categorize 10 real merchant names with `@Generable`
 
+## M0.5: Quality baseline (done)
+- [x] Feature folders, @Observable models, async import off the main actor
+- [x] swift-format + scripts/check.sh (warnings as errors), docs/QUALITY.md, CLAUDE.md
+- [x] Privacy manifest, os.Logger without personal data, previews with fake data
+- [ ] App unit-test target for feature models (with M1)
+- [ ] String Catalog (with Bosnian UI)
+- [ ] GitHub Actions running scripts/check.sh (when the repo goes on GitHub)
+- [ ] UI smoke test for the import flow (with the dashboard)
+
 ## M1: Import + transactions (week 1–2)
 - [x] Union banka parser, unit-tested against the real (anonymized) statement
 - [ ] Generic CSV import with column mapping
