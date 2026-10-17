@@ -1,0 +1,12 @@
+# Real bank statements: never commit
+test-data/private/
+*.pdf
+!TragKit/Tests/**/Fixtures/*.pdf
+
+# Xcode / SwiftPM
+.DS_Store
+xcuserdata/
+DerivedData/
+.build/
+.swiftpm/
+*.xcuserstate
