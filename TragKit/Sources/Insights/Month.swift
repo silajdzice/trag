@@ -27,6 +27,10 @@ public struct Month: Hashable, Comparable, Sendable, Identifiable {
         month == 1 ? Month(year: year - 1, month: 12) : Month(year: year, month: month - 1)
     }
 
+    public func next() -> Month {
+        month == 12 ? Month(year: year + 1, month: 1) : Month(year: year, month: month + 1)
+    }
+
     public static func < (lhs: Month, rhs: Month) -> Bool {
         (lhs.year, lhs.month) < (rhs.year, rhs.month)
     }
