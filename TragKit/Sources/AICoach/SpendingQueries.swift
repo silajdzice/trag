@@ -42,12 +42,16 @@ public struct SpendingQueries: Sendable {
     }
 
     /// Spending at merchants whose name contains `query` (case and diacritics insensitive). Nil month means all months.
+    /// Bosnian changes word endings ("u Bingu", "Konzumu"), so if nothing matches, up to two final letters are dropped.
     public func spending(atMerchant query: String, month: Month?) -> [SpendingSummary.Line<String>] {
         let key = MerchantKey.normalize(query)
         guard !key.isEmpty else { return [] }
         let pool = month.map { byMonth[$0] ?? [] } ?? transactions
-        return SpendingSummary(transactions: pool.filter { MerchantKey.normalize($0.counterparty).contains(key) })
-            .byMerchant
+        for candidate in [key, String(key.dropLast()), String(key.dropLast(2))] where candidate.count >= 3 {
+            let matching = pool.filter { MerchantKey.normalize($0.counterparty).contains(candidate) }
+            if !matching.isEmpty { return SpendingSummary(transactions: matching).byMerchant }
+        }
+        return []
     }
 
     public var recurringPayments: [RecurringPayment] {

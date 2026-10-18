@@ -16,7 +16,11 @@ public struct CategorySuggester: CategorySuggesting {
         var category: AICategory
     }
 
-    public init() {}
+    public let engine: AIEngine
+
+    public init(engine: AIEngine) {
+        self.engine = engine
+    }
 
     /// Returns a suggestion for every merchant, keyed by `MerchantKey.normalize(name)`; `.other` when the model is unsure,
     /// so callers can remember that it was already asked.
@@ -24,7 +28,7 @@ public struct CategorySuggester: CategorySuggesting {
         var result: [String: SpendingCategory] = [:]
         for merchant in merchants {
             // A fresh session per merchant keeps answers independent and the context small.
-            let session = LanguageModelSession(
+            let session = engine.session(
                 instructions: """
                     You categorise card payments from bank statements in Bosnia and Herzegovina. \
                     Merchant names are uppercase and often cut short; D.O.O./DOO means a company, PJ a branch, \

@@ -18,11 +18,15 @@ public struct SavingTipsGenerator: Sendable {
         var tips: [SavingTip]
     }
 
-    public init() {}
+    public let engine: AIEngine
+
+    public init(engine: AIEngine) {
+        self.engine = engine
+    }
 
     public func tips(for month: Month, queries: SpendingQueries) async throws -> [SavingTip] {
         let facts = Self.facts(for: month, queries: queries)
-        let session = LanguageModelSession(
+        let session = engine.session(
             instructions: """
                 You are a kind, practical money coach. Below are facts and signals about the user's spending, \
                 computed by the app. Write three tips for next month. Reply in English.
