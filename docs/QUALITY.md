@@ -28,6 +28,8 @@ Trag is a portfolio app: the code will be read by hiring managers. Every merged 
 - AI suggestions never override user choices and are visibly marked.
 - Prompt changes are measured with `EvalSuite` (scripts/ai-evals.sh on a Mac, the AI lab on a phone), not unit tests.
 - Engines are swappable behind `LanguageModelSession`; small models use the structured-intent strategy so they never write amounts.
+- Extraction (intents, categories) decodes greedily, so evals are reproducible. Model output is verified in Swift: a shop name must appear in the question (models copy prompt examples), and the answer kind follows the filled-in details.
+- Every chat answer has a 30 s timeout. `toolCallingMode: .required` is not used: it makes the model call tools forever.
 - Models are downloaded only by the user, in the app, from pinned Hugging Face repos; dependencies are pinned to exact versions.
 
 ## Testing

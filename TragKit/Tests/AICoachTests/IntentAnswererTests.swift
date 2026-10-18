@@ -62,7 +62,30 @@ import Testing
         #expect(QueryIntent(kind: .monthSummary, category: .pets).resolvedKind == .categoryTotal)
         #expect(QueryIntent(kind: .unknown, merchant: "Telemach").resolvedKind == .merchantTotal)
         #expect(QueryIntent(kind: .monthSummary, category: .other).resolvedKind == .monthSummary)
-        #expect(QueryIntent(kind: .subscriptions, merchant: "Apple").resolvedKind == .subscriptions)
+        #expect(QueryIntent(kind: .subscriptions, merchant: "Telemach").resolvedKind == .merchantTotal)
+        #expect(QueryIntent(kind: .forecast, merchant: "Konzum").resolvedKind == .forecast)
+    }
+
+    @Test func shopNamesCopiedFromExamplesAreDropped() {
+        let leaked = QueryIntent(kind: .categoryTotal, category: .eatingOut, merchant: "Konzum")
+        #expect(leaked.verified(against: "What did I spend on eating out this month?").merchant.isEmpty)
+        #expect(
+            IntentAnswerer.answer(leaked, to: "What did I spend on eating out this month?", queries: queries)
+                == .categoryTotal(category: .eatingOut, month: september, total: 35, count: 1, currency: "BAM"))
+    }
+
+    @Test func shopKindWithoutAShopFallsBackToCategoryOrIsNotUnderstood() {
+        let leaked = QueryIntent(kind: .merchantTotal, category: .eatingOut, merchant: "Konzum")
+            .verified(against: "What did I spend on eating out this month?")
+        #expect(leaked.resolvedKind == .categoryTotal)
+        let empty = QueryIntent(kind: .merchantTotal, merchant: "Konzum").verified(against: "How much?")
+        #expect(empty.resolvedKind == .unknown)
+    }
+
+    @Test func shopNamesWithBosnianEndingsAreKept() {
+        let intent = QueryIntent(kind: .merchantTotal, merchant: "Konzum")
+        #expect(intent.verified(against: "Koliko sam potrošio u Konzumu?").merchant == "Konzum")
+        #expect(QueryIntent(kind: .merchantTotal, merchant: "Bingo").verified(against: "Koliko u Bingu?").merchant == "Bingo")
     }
 
     @Test func bosnianCaseEndingsStillFindTheMerchant() {

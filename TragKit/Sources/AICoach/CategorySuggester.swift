@@ -35,7 +35,9 @@ public struct CategorySuggester: CategorySuggesting {
                     SA/SAR/SARAJEV the city Sarajevo. Choose one category:
                     \(AICategory.promptGuide)
                     """)
-            let suggestion = try await session.respond(to: "Merchant: \(merchant)", generating: Suggestion.self).content
+            let suggestion = try await session.respond(
+                to: "Merchant: \(merchant)", generating: Suggestion.self, options: GenerationOptions(samplingMode: .greedy)
+            ).content
             result[MerchantKey.normalize(merchant)] = suggestion.category.spendingCategory
         }
         return result

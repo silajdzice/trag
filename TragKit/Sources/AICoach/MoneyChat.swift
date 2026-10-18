@@ -29,9 +29,12 @@ public final class MoneyChat {
         session = Self.makeSession(queries: queries, engine: engine, strategy: self.strategy, log: log)
     }
 
+    /// Longest a single answer may take; a stuck model (e.g. looping on tool calls) must not hang the chat.
+    public static let timeout: Duration = .seconds(30)
+
     public func ask(_ question: String) async -> Reply {
         do {
-            return try await answer(question)
+            return try await withTimeout(Self.timeout) { try await self.answer(question) }
         } catch LanguageModelError.contextSizeExceeded {
             // Long conversation: start fresh and try once more.
             session = Self.makeSession(queries: queries, engine: engine, strategy: strategy, log: log)
@@ -50,16 +53,35 @@ public final class MoneyChat {
         switch strategy {
         case .structuredIntent:
             // Each question stands alone, so the small context of open models never fills up.
-            let intent = try await session.respond(to: question, generating: QueryIntent.self).content
-            return .computed(IntentAnswerer.answer(intent, queries: queries))
+            // Extraction should be repeatable, so decode greedily.
+            let intent = try await session.respond(
+                to: question, generating: QueryIntent.self, options: GenerationOptions(samplingMode: .greedy)
+            ).content
+            return .computed(IntentAnswerer.answer(intent, to: question, queries: queries))
         case .toolCalling:
-            let text = Self.removingReasoning(try await session.respond(to: question).content)
+            // `.required` tool calling loops (the model must call a tool on every turn and never answers),
+            // so tool use is left to the model and enforced afterwards by the grounding check.
+            let options = GenerationOptions(samplingMode: .greedy)
+            let text = Self.removingReasoning(try await session.respond(to: question, options: options).content)
             let ungrounded = GroundingCheck.ungroundedAmounts(in: text, sources: log.all + [question])
             guard ungrounded.isEmpty else {
                 Self.logger.notice("Withheld an answer with \(ungrounded.count) ungrounded amounts")
                 return .notGrounded
             }
             return .answer(text)
+        }
+    }
+
+    private func withTimeout(_ limit: Duration, _ work: @escaping @MainActor () async throws -> Reply) async throws -> Reply {
+        try await withThrowingTaskGroup(of: Reply.self) { group in
+            group.addTask { try await work() }
+            group.addTask {
+                try await Task.sleep(for: limit)
+                return .failed("Timed out after \(limit)")
+            }
+            let first = try await group.next() ?? .failed("No answer")
+            group.cancelAll()
+            return first
         }
     }
 

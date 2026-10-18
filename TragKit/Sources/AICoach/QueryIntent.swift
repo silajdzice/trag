@@ -40,13 +40,29 @@ struct QueryIntent {
 
     var hasMerchant: Bool { !merchant.trimmingCharacters(in: .whitespaces).isEmpty }
 
-    /// The model sometimes fills in a category or shop but picks a general kind; the specific detail wins.
+    /// Drops a shop name the user never wrote. Models sometimes copy names from the prompt's examples
+    /// ("Konzum" for a question about eating out). Bosnian case endings are allowed: "Konzumu" mentions "Konzum".
+    func verified(against question: String) -> QueryIntent {
+        guard hasMerchant else { return self }
+        let questionKey = MerchantKey.normalize(question)
+        let merchantKey = MerchantKey.normalize(merchant)
+        let stem = String(merchantKey.prefix(max(3, merchantKey.count - 2)))
+        var copy = self
+        if !questionKey.contains(stem) { copy.merchant = "" }
+        return copy
+    }
+
+    /// The kind to answer, from the details the model filled in rather than its label alone.
+    /// Call on a `verified(against:)` intent, so a shop name is known to come from the question.
+    /// - A shop the user named means spending at that shop (except a forecast).
+    /// - A category means spending in that category, whatever general kind the model chose.
+    /// - "Spending at a shop" with no shop left falls back to the category, or is not understood. Never a guess.
     var resolvedKind: Kind {
+        if hasMerchant, kind != .forecast { return .merchantTotal }
         switch kind {
-        case .monthSummary, .unknown:
-            if hasMerchant { return .merchantTotal }
+        case .monthSummary, .unknown, .merchantTotal:
             if category != .other { return .categoryTotal }
-            return kind
+            return kind == .merchantTotal ? .unknown : kind
         default:
             return kind
         }
@@ -65,6 +81,10 @@ public enum ComputedAnswer: Sendable, Equatable {
 }
 
 enum IntentAnswerer {
+    static func answer(_ intent: QueryIntent, to question: String, queries: SpendingQueries) -> ComputedAnswer {
+        answer(intent.verified(against: question), queries: queries)
+    }
+
     static func answer(_ intent: QueryIntent, queries: SpendingQueries) -> ComputedAnswer {
         let currency = queries.currency
         switch intent.resolvedKind {
