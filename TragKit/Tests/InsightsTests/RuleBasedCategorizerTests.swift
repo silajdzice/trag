@@ -54,6 +54,17 @@ import Testing
         #expect(custom.category(for: makeTransaction(-5, "AMKO KOMERC D.O.O. SAR")) == .eatingOut)
     }
 
+    @Test func precedenceUserThenRuleThenAI() {
+        let categorizer = RuleBasedCategorizer(
+            overrides: ["KONZUM BIH": .shopping],
+            suggestions: ["KONZUM BIH": .health, "BINGO D O O": .kids, "SOLIDEX DOO": .health])
+        #expect(categorizer.categorization(for: makeTransaction(-1, "KONZUM BIH")) == (.shopping, .user))
+        #expect(categorizer.categorization(for: makeTransaction(-1, "BINGO D.O.O.")) == (.groceries, .rule))
+        #expect(categorizer.categorization(for: makeTransaction(-1, "SOLIDEX DOO")) == (.health, .ai))
+        #expect(categorizer.categorization(for: makeTransaction(-1, "UNKNOWN")) == (.other, .none))
+        #expect(categorizer.categorization(for: makeTransaction(-1, "Union banka", .fee)) == (.fees, .transactionKind))
+    }
+
     @Test func merchantKeyNormalisation() {
         #expect(MerchantKey.normalize("GOOGLE *YouTubePremium") == "GOOGLE YOUTUBEPREMIUM")
         #expect(MerchantKey.normalize("Čevabdžinica Željo") == "CEVABDZINICA ZELJO")

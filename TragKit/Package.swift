@@ -15,5 +15,8 @@ let package = Package(
         .target(name: "AICoach", dependencies: ["StatementParsing", "Insights"]),
         .testTarget(name: "StatementParsingTests", dependencies: ["StatementParsing"]),
         .testTarget(name: "InsightsTests", dependencies: ["Insights"]),
+        .testTarget(name: "AICoachTests", dependencies: ["AICoach"]),
+        // Runs the real on-device model; nondeterministic, so it is scored and run on demand (scripts/ai-evals.sh).
+        .testTarget(name: "AICoachEvals", dependencies: ["AICoach"]),
     ]
 )

@@ -5,8 +5,22 @@ public protocol TransactionCategorizer: Sendable {
     func category(for transaction: BankTransaction) -> SpendingCategory
 }
 
-/// Deterministic categorisation: transaction kind, then the user's own choices, then keyword rules.
-/// The on-device model only helps with merchants this returns `.other` for.
+/// Why a transaction got its category, from most to least trusted.
+public enum CategorySource: String, Sendable, Hashable, Codable {
+    /// Cash, fees and income follow from the transaction itself.
+    case transactionKind
+    /// The user chose it for this merchant.
+    case user
+    /// A built-in keyword rule matched.
+    case rule
+    /// The on-device model suggested it.
+    case ai
+    /// Nothing matched.
+    case none
+}
+
+/// Categorisation in order of trust: transaction kind, the user's own choices, keyword rules,
+/// then suggestions from the on-device model for merchants nothing else recognised.
 public struct RuleBasedCategorizer: TransactionCategorizer {
     public struct Rule: Sendable {
         public enum Match: Sendable { case contains, word }
@@ -31,23 +45,36 @@ public struct RuleBasedCategorizer: TransactionCategorizer {
     public let rules: [Rule]
     /// User choices keyed by `MerchantKey.normalize(counterparty)`. Always win over rules.
     public let overrides: [String: SpendingCategory]
+    /// On-device model suggestions, keyed like `overrides`. Only used when no rule matches; `.other` means it was unsure.
+    public let suggestions: [String: SpendingCategory]
 
-    public init(rules: [Rule] = RuleBasedCategorizer.defaultRules, overrides: [String: SpendingCategory] = [:]) {
+    public init(
+        rules: [Rule] = RuleBasedCategorizer.defaultRules,
+        overrides: [String: SpendingCategory] = [:],
+        suggestions: [String: SpendingCategory] = [:]
+    ) {
         self.rules = rules
         self.overrides = overrides
+        self.suggestions = suggestions
     }
 
     public func category(for transaction: BankTransaction) -> SpendingCategory {
+        categorization(for: transaction).category
+    }
+
+    public func categorization(for transaction: BankTransaction) -> (category: SpendingCategory, source: CategorySource) {
         switch transaction.kind {
-        case .fee: return .fees
-        case .cashWithdrawal: return .cash
-        case .income: return .income
+        case .fee: return (.fees, .transactionKind)
+        case .cashWithdrawal: return (.cash, .transactionKind)
+        case .income: return (.income, .transactionKind)
         default: break
         }
         let key = MerchantKey.normalize(transaction.counterparty)
-        if let override = overrides[key] { return override }
-        if transaction.amount > 0 { return .income }
-        return rules.first { $0.matches(key) }?.category ?? .other
+        if let override = overrides[key] { return (override, .user) }
+        if transaction.amount > 0 { return (.income, .transactionKind) }
+        if let rule = rules.first(where: { $0.matches(key) }) { return (rule.category, .rule) }
+        if let suggestion = suggestions[key], suggestion != .other { return (suggestion, .ai) }
+        return (.other, .none)
     }
 }
 
