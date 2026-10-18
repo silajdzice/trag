@@ -17,7 +17,7 @@ final class ToolLog: Sendable {
 
 struct CategorySpendingTool: Tool {
     let name = "spendingByCategory"
-    let description = "Exact total the user spent in one category during one month."
+    let description = "Spending in ONE category (for example groceries or pets) during one month. Not for total spending."
     let queries: SpendingQueries
     let log: ToolLog
 
@@ -64,7 +64,8 @@ struct MerchantSpendingTool: Tool {
 
 struct MonthSummaryTool: Tool {
     let name = "monthSummary"
-    let description = "Total spent, income and the biggest categories and places for one month."
+    let description =
+        "Total spent in one month (\"ukupno\", \"total\", \"overall\"), plus income and the biggest categories and places."
     let queries: SpendingQueries
     let log: ToolLog
 
@@ -128,5 +129,40 @@ struct ForecastTool: Tool {
             (subscriptions and bills \(AmountText.format(forecast.recurring, currency)), \
             everything else \(AmountText.format(forecast.variable, currency)), based on \(forecast.basedOnMonths) months).
             """)
+    }
+}
+
+struct TransactionListTool: Tool {
+    static let limit = 25
+    let name = "listTransactions"
+    let description = "Lists the user's individual payments (date, place, amount), filtered by category, shop and month."
+    let queries: SpendingQueries
+    let log: ToolLog
+
+    // Required fields with explicit "any" values: generated arguments tend to skip optional fields.
+    @Generable
+    struct Arguments {
+        @Guide(description: "Category to list, or other for any category")
+        var category: AICategory
+        @Guide(description: "Shop or company name to list, or an empty string for any shop")
+        var merchant: String
+        @Guide(description: "Month as YYYY-MM, or latest, or all for every month")
+        var month: String
+    }
+
+    func call(arguments: Arguments) async throws -> String {
+        let month = arguments.month == "all" ? nil : queries.resolveMonth(arguments.month)
+        let category = arguments.category == .other ? nil : arguments.category.spendingCategory
+        let merchant = arguments.merchant.trimmingCharacters(in: .whitespaces)
+        let payments = queries.expenses(category: category, merchant: merchant.isEmpty ? nil : merchant, month: month)
+        guard !payments.isEmpty else { return log.record("No payments match.") }
+
+        let lines = payments.prefix(Self.limit).map { payment in
+            "\(AmountText.day(payment.bookingDate)) \(payment.counterparty): \(AmountText.format(-payment.amount, payment.currency))"
+        }
+        let total = payments.reduce(Decimal.zero) { $0 - $1.amount }
+        var output = lines + ["\(payments.count) payments, total \(AmountText.format(total, queries.currency))."]
+        if payments.count > Self.limit { output.append("Only the \(Self.limit) most recent are listed.") }
+        return log.record(output.joined(separator: "\n"))
     }
 }

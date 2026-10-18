@@ -47,11 +47,32 @@ public struct SpendingQueries: Sendable {
         let key = MerchantKey.normalize(query)
         guard !key.isEmpty else { return [] }
         let pool = month.map { byMonth[$0] ?? [] } ?? transactions
-        for candidate in [key, String(key.dropLast()), String(key.dropLast(2))] where candidate.count >= 3 {
-            let matching = pool.filter { MerchantKey.normalize($0.counterparty).contains(candidate) }
-            if !matching.isEmpty { return SpendingSummary(transactions: matching).byMerchant }
+        guard let match = matchingMerchantKey(key, in: pool) else { return [] }
+        return SpendingSummary(transactions: pool.filter { MerchantKey.normalize($0.counterparty).contains(match) }).byMerchant
+    }
+
+    /// Individual payments (newest first) matching every given filter; nil filters match everything.
+    public func expenses(category: SpendingCategory? = nil, merchant: String? = nil, month: Month? = nil) -> [BankTransaction] {
+        var pool = month.map { byMonth[$0] ?? [] } ?? transactions
+        pool = pool.filter(\.isExpense)
+        if let category {
+            pool = pool.filter { categorizer.category(for: $0) == category }
         }
-        return []
+        if let merchant, let key = matchingMerchantKey(merchant, in: pool) {
+            pool = pool.filter { MerchantKey.normalize($0.counterparty).contains(key) }
+        } else if merchant != nil {
+            return []
+        }
+        return pool.sorted { $0.bookingDate > $1.bookingDate }
+    }
+
+    /// The form of `query` (full, or without one or two Bosnian case-ending letters) that matches a merchant in `pool`.
+    private func matchingMerchantKey(_ query: String, in pool: [BankTransaction]) -> String? {
+        let key = MerchantKey.normalize(query)
+        guard !key.isEmpty else { return nil }
+        return [key, String(key.dropLast()), String(key.dropLast(2))].first { candidate in
+            candidate.count >= 3 && pool.contains { MerchantKey.normalize($0.counterparty).contains(candidate) }
+        }
     }
 
     public var recurringPayments: [RecurringPayment] {
@@ -67,6 +88,11 @@ public struct SpendingQueries: Sendable {
 enum AmountText {
     static func format(_ amount: Decimal, _ currency: String) -> String {
         "\(amount.rounded(scale: 2).formatted(.number.precision(.fractionLength(2)).grouping(.never).locale(Locale(identifier: "en_US_POSIX")))) \(currency)"
+    }
+
+    /// "2026-09-12"
+    static func day(_ date: Date) -> String {
+        date.formatted(.iso8601.year().month().day())
     }
 
     static func month(_ month: Month) -> String {

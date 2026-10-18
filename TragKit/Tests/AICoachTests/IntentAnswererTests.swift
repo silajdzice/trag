@@ -19,7 +19,7 @@ import Testing
         let intent = QueryIntent(kind: .categoryTotal, category: .pets)
         #expect(
             IntentAnswerer.answer(intent, queries: queries)
-                == .categoryTotal(category: .pets, month: september, total: 135, count: 1, currency: "BAM"))
+                == .categoryTotal(category: .pets, month: september, total: Decimal(string: "180.50")!, count: 2, currency: "BAM"))
     }
 
     @Test func merchantAcrossAllMonths() {
@@ -33,6 +33,34 @@ import Testing
         #expect(month == nil)
         #expect(total == Decimal(string: "134.90"))
         #expect(count == 2)
+    }
+
+    @Test func listsIndividualPaymentsNewestFirstWithTotals() {
+        let intent = QueryIntent(kind: .transactionList, category: .pets, month: "2026-09")
+        guard
+            case .transactionList(let category, let merchant, let month, let payments, let count, let total, _) =
+                IntentAnswerer.answer(intent, queries: queries)
+        else {
+            Issue.record("expected a transaction list")
+            return
+        }
+        #expect(category == .pets)
+        #expect(merchant == nil)
+        #expect(month == september)
+        #expect(Set(payments.map(\.amount)) == [135, Decimal(string: "45.50")!])
+        #expect(count == 2)
+        #expect(total == Decimal(string: "180.50"))
+    }
+
+    @Test func listingByShopKeepsTheListKind() {
+        let intent = QueryIntent(kind: .transactionList, merchant: "Bingo", month: "2026-08")
+            .verified(against: "Pokaži plaćanja u Bingu u augustu")
+        #expect(intent.resolvedKind == .transactionList)
+        guard case .transactionList(_, _, _, let payments, _, _, _) = IntentAnswerer.answer(intent, queries: queries) else {
+            Issue.record("expected a transaction list")
+            return
+        }
+        #expect(payments.map(\.amount) == [Decimal(string: "120.40")!])
     }
 
     @Test func unknownMerchantIsReported() {
@@ -94,9 +122,10 @@ import Testing
     }
 
     @Test func evalMatchingUsesExactAmounts() {
-        #expect(EvalSuite.matches(.answer("You spent 250.10 BAM."), expected: Decimal(string: "250.10")!))
-        #expect(!EvalSuite.matches(.answer("About 250 BAM."), expected: Decimal(string: "250.10")!))
-        #expect(!EvalSuite.matches(.notGrounded, expected: 1))
+        #expect(EvalSuite.matches(.answer("You spent 250.10 BAM."), expected: [Decimal(string: "250.10")!]))
+        #expect(!EvalSuite.matches(.answer("About 250 BAM."), expected: [Decimal(string: "250.10")!]))
+        #expect(!EvalSuite.matches(.notGrounded, expected: [1]))
+        #expect(!EvalSuite.matches(.answer("135.00 BAM at the vet."), expected: [135, Decimal(string: "45.50")!]))
     }
 
     @Test @MainActor func reasoningTraceIsRemoved() {

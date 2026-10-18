@@ -13,6 +13,7 @@ struct QueryIntent {
         case merchantTotal
         case subscriptions
         case forecast
+        case transactionList
         case unknown
     }
 
@@ -27,7 +28,8 @@ struct QueryIntent {
         description: """
             categoryTotal: spending in a category. merchantTotal: spending at a shop or company. \
             monthSummary: total spending or overview of a month. subscriptions: subscriptions or monthly bills. \
-            forecast: expected spending next month. unknown: anything else.
+            forecast: expected spending next month. transactionList: list, show or name the individual payments. \
+            unknown: anything else.
             """)
     var kind: Kind
 
@@ -54,11 +56,11 @@ struct QueryIntent {
 
     /// The kind to answer, from the details the model filled in rather than its label alone.
     /// Call on a `verified(against:)` intent, so a shop name is known to come from the question.
-    /// - A shop the user named means spending at that shop (except a forecast).
+    /// - A shop the user named means spending at that shop (except a forecast or a list of payments).
     /// - A category means spending in that category, whatever general kind the model chose.
     /// - "Spending at a shop" with no shop left falls back to the category, or is not understood. Never a guess.
     var resolvedKind: Kind {
-        if hasMerchant, kind != .forecast { return .merchantTotal }
+        if hasMerchant, kind != .forecast, kind != .transactionList { return .merchantTotal }
         switch kind {
         case .monthSummary, .unknown, .merchantTotal:
             if category != .other { return .categoryTotal }
@@ -77,10 +79,34 @@ public enum ComputedAnswer: Sendable, Equatable {
     case merchantNotFound(String)
     case subscriptions(names: [String], monthlyTotal: Decimal, currency: String)
     case forecast(month: Month, total: Decimal, currency: String)
+    /// Individual payments; `count` and `total` cover all matches, `payments` at most `IntentAnswerer.listLimit`.
+    case transactionList(
+        category: SpendingCategory?, merchant: String?, month: Month?, payments: [ListedPayment], count: Int, total: Decimal,
+        currency: String)
     case notUnderstood
 }
 
+/// One payment as shown in a chat answer.
+public struct ListedPayment: Sendable, Equatable, Identifiable {
+    public init(id: String, date: Date, merchant: String, amount: Decimal, currency: String) {
+        self.id = id
+        self.date = date
+        self.merchant = merchant
+        self.amount = amount
+        self.currency = currency
+    }
+
+    public let id: String
+    public let date: Date
+    public let merchant: String
+    /// Positive amount paid.
+    public let amount: Decimal
+    public let currency: String
+}
+
 enum IntentAnswerer {
+    static let listLimit = 25
+
     static func answer(_ intent: QueryIntent, to question: String, queries: SpendingQueries) -> ComputedAnswer {
         answer(intent.verified(against: question), queries: queries)
     }
@@ -116,6 +142,17 @@ enum IntentAnswerer {
         case .forecast:
             guard let forecast = queries.forecast else { return .notUnderstood }
             return .forecast(month: forecast.month, total: forecast.total, currency: currency)
+        case .transactionList:
+            let category = intent.category == .other ? nil : intent.category.spendingCategory
+            let merchant = intent.hasMerchant ? intent.merchant.trimmingCharacters(in: .whitespaces) : nil
+            let month = queries.resolveMonth(intent.month)
+            let payments = queries.expenses(category: category, merchant: merchant, month: month)
+            return .transactionList(
+                category: category, merchant: merchant, month: month,
+                payments: payments.prefix(listLimit).map {
+                    ListedPayment(id: $0.id, date: $0.bookingDate, merchant: $0.counterparty, amount: -$0.amount, currency: $0.currency)
+                },
+                count: payments.count, total: payments.reduce(0) { $0 - $1.amount }, currency: currency)
         case .unknown:
             return .notUnderstood
         }

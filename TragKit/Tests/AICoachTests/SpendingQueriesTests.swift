@@ -48,6 +48,16 @@ import Testing
         #expect(queries.spending(atMerchant: "  ", month: nil).isEmpty)
     }
 
+    @Test func expensesFilterByCategoryShopAndMonth() {
+        let groceries = queries.expenses(category: .groceries)
+        #expect(groceries.count == 3)
+        #expect(groceries.last?.amount == -10)  // August, the oldest, comes last
+        #expect(queries.expenses(category: .groceries, month: Month(year: 2026, month: 9)).count == 2)
+        #expect(queries.expenses(merchant: "Konzumu").count == 2)
+        #expect(queries.expenses(merchant: "Zara").isEmpty)
+        #expect(queries.expenses(category: .entertainment, merchant: "Konzum").isEmpty)
+    }
+
     @Test func amountTextIsStableForTheModel() {
         #expect(AmountText.format(Decimal(string: "2936.391")!, "BAM") == "2936.39 BAM")
         #expect(AmountText.format(5, "EUR") == "5.00 EUR")

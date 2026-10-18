@@ -2,9 +2,16 @@ import Foundation
 import FoundationModels
 import OSLog
 
+/// Something that answers questions about the user's money (the real chat, or a stub in tests).
+@MainActor
+public protocol MoneyAnswering: AnyObject {
+    var strategy: ChatStrategy { get }
+    func ask(_ question: String) async -> MoneyChat.Reply
+}
+
 /// "Ask your money" on any engine. Two strategies, one guarantee: amounts shown to the user come from Swift.
 @MainActor
-public final class MoneyChat {
+public final class MoneyChat: MoneyAnswering {
     public enum Reply: Equatable, Sendable {
         /// Model-written text whose amounts all came from tool output (tool-calling strategy).
         case answer(String)
@@ -101,6 +108,8 @@ public final class MoneyChat {
             Category words: namirnice = groceries, hrana vani/restorani = eatingOut, režije = utilities, ljubimci = pets, \
             djeca = kids, zdravlje = health, zabava = entertainment, pretplate = subscriptions, prevoz/gorivo = transport, \
             kupovina = shopping.
+            Follow-up questions ("those", "them", "list them", "te", "njih", "nabroji ih") refer to the previous question: \
+            reuse its category, shop and month.
             """
         switch strategy {
         case .structuredIntent:
@@ -116,6 +125,7 @@ public final class MoneyChat {
                     "Koliko sam potrošio u Konzumu u augustu?" → month of August, merchant Konzum, kind merchantTotal
                     "Koliko sam ukupno potrošio prošli mjesec?" → the month before the latest, kind monthSummary
                     "Koje pretplate imam?" → kind subscriptions
+                    "Pokaži mi plaćanja za ljubimce" → category pets, kind transactionList
                     """)
         case .toolCalling:
             let tools: [any Tool] = [
@@ -124,6 +134,7 @@ public final class MoneyChat {
                 MerchantSpendingTool(queries: queries, log: log),
                 RecurringPaymentsTool(queries: queries, log: log),
                 ForecastTool(queries: queries, log: log),
+                TransactionListTool(queries: queries, log: log),
             ]
             return engine.session(
                 tools: tools,
@@ -133,7 +144,8 @@ public final class MoneyChat {
                     Rules:
                     - Every amount you mention must come from a tool result in this conversation. Call a tool before answering.
                     - Quote amounts exactly as the tool returned them. Never round, add, estimate or invent numbers.
-                    - If no tool can answer, say you don't know. Keep answers to two or three sentences.
+                    - If no tool can answer, say you don't know. Keep answers short; when listing payments, \
+                    give one line per payment with date, place and amount.
                     \(context)
                     """)
         }

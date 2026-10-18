@@ -83,13 +83,9 @@ public enum AIEngine: Sendable, Hashable {
         }
     }
 
-    /// Apple's model handles tool calling well; small open models are more reliable filling in a structured intent.
-    public var recommendedChatStrategy: ChatStrategy {
-        switch self {
-        case .appleIntelligence: .toolCalling
-        case .local: .structuredIntent
-        }
-    }
+    /// Structured intent for every engine: in the evals it was the most reliable (9/9 every run on Apple Intelligence,
+    /// vs 7–8/9 for tool calling), twice as fast, and answers in the user's language. Tool calling stays in the AI lab.
+    public var recommendedChatStrategy: ChatStrategy { .structuredIntent }
 
     func session(tools: [any FoundationModels.Tool] = [], instructions: String) -> LanguageModelSession {
         LanguageModelSession(model: languageModel, tools: tools, instructions: instructions)

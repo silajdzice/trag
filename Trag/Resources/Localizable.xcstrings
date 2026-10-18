@@ -895,6 +895,16 @@
         }
       }
     },
+    "No payments match.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nema plaćanja koja odgovaraju."
+          }
+        }
+      }
+    },
     "No recurring payments yet": {
       "localizations": {
         "bs": {
@@ -981,6 +991,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ostalo"
+          }
+        }
+      }
+    },
+    "Payments in %@: %@": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plaćanja (%1$@): %2$@"
           }
         }
       }
@@ -1101,6 +1121,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kupovina"
+          }
+        }
+      }
+    },
+    "Show my payments for pets this month.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pokaži mi plaćanja za ljubimce ovaj mjesec."
+          }
+        }
+      }
+    },
+    "Showing the %lld most recent of %lld.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prikazano posljednjih %1$lld od %2$lld."
           }
         }
       }
@@ -1371,6 +1411,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Za pretplate i račune plaćaš %1$@ mjesečno: %2$@."
+          }
+        }
+      }
+    },
+    "all imported months": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "svi uvezeni mjeseci"
           }
         }
       }

@@ -33,6 +33,15 @@ extension ComputedAnswer {
             )
         case .forecast(let month, let total, let currency):
             return String(localized: "Expected spending in \(month.displayName): about \(total.moneyFormatted(currency: currency)).")
+        case .transactionList(let category, let merchant, let month, _, let count, let total, let currency):
+            guard count > 0 else { return String(localized: "No payments match.") }
+            let subject = [category.map { String(localized: $0.title) }, merchant].compactMap { $0 }.joined(separator: ", ")
+            let period = month?.displayName ?? String(localized: "all imported months")
+            let headline =
+                subject.isEmpty
+                ? String(localized: "Payments in \(period): \(total.moneyFormatted(currency: currency))")
+                : String(localized: "\(subject) in \(period): \(total.moneyFormatted(currency: currency))")
+            return headline + " · " + String(localized: "\(count) payments")
         case .notUnderstood:
             return String(localized: "I couldn't understand that question. Try asking about a category, a shop or a month.")
         }

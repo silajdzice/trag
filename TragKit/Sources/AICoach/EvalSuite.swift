@@ -22,9 +22,21 @@ public enum EvalSuite {
         public let tasks: [TaskResult]
     }
 
+    /// One conversation. Earlier questions set up context; only the last reply is scored,
+    /// and it must contain every expected amount.
     struct ChatCase {
-        let question: String
-        let expected: Decimal
+        let questions: [String]
+        let expected: [Decimal]
+
+        init(_ question: String, expect amounts: Decimal...) {
+            questions = [question]
+            expected = amounts
+        }
+
+        init(conversation: [String], expect amounts: Decimal...) {
+            questions = conversation
+            expected = amounts
+        }
     }
 
     static let calendar: Calendar = {
@@ -48,6 +60,7 @@ public enum EvalSuite {
             tx(-120.40, "BINGO D.O.O. TUZLA", 8), tx(-80.00, "VETERINARSKA STANICA", 8),
             tx(-67.45, "TELEMACH DOO", 8, .billPayment),
             tx(-250.10, "BINGO D.O.O. TUZLA", 9), tx(-35.00, "PIZZERIA MASLINA", 9), tx(-135.00, "VETERINARSKA STANICA", 9),
+            tx(-45.50, "ZOO CENTAR", 9),
             tx(-67.45, "TELEMACH DOO", 9, .billPayment), tx(-66.00, "CINEPLEXX BH", 9), tx(2000, "ACME DOO", 9, .income),
         ],
         categorizer: RuleBasedCategorizer(), calendar: calendar)
@@ -60,12 +73,19 @@ public enum EvalSuite {
     ]
 
     static let chatCases: [ChatCase] = [
-        ChatCase(question: "How much did I spend on groceries in 2026-09?", expected: Decimal(string: "250.10")!),
-        ChatCase(question: "Koliko sam potrošio na ljubimce u septembru 2026?", expected: 135),
-        ChatCase(question: "How much do I pay Telemach in 2026-09?", expected: Decimal(string: "67.45")!),
-        ChatCase(question: "Koliko sam ukupno potrošio u augustu 2026?", expected: Decimal(string: "267.85")!),
-        ChatCase(question: "Koliko sam potrošio u Bingu u augustu 2026?", expected: Decimal(string: "120.40")!),
-        ChatCase(question: "What did I spend on eating out this month?", expected: 35),
+        ChatCase("How much did I spend on groceries in 2026-09?", expect: Decimal(string: "250.10")!),
+        ChatCase("Koliko sam potrošio na ljubimce u septembru 2026?", expect: Decimal(string: "180.50")!),
+        ChatCase("How much do I pay Telemach in 2026-09?", expect: Decimal(string: "67.45")!),
+        ChatCase("Koliko sam ukupno potrošio u augustu 2026?", expect: Decimal(string: "267.85")!),
+        ChatCase("Koliko sam potrošio u Bingu u augustu 2026?", expect: Decimal(string: "120.40")!),
+        ChatCase("What did I spend on eating out this month?", expect: 35),
+        ChatCase("Pokaži mi sva plaćanja za ljubimce u septembru 2026.", expect: 135, Decimal(string: "45.50")!),
+        ChatCase(
+            conversation: ["How much did I spend on pets in 2026-09?", "List those payments."],
+            expect: 135, Decimal(string: "45.50")!),
+        ChatCase(
+            conversation: ["Koliko sam potrošio na ljubimce u septembru 2026?", "Nabroji mi te transakcije."],
+            expect: 135, Decimal(string: "45.50")!),
     ]
 
     @MainActor
@@ -103,9 +123,15 @@ public enum EvalSuite {
         let start = ContinuousClock.now
         var failures: [String] = []
         for item in chatCases {
-            // A fresh chat per question, so one mistake doesn't leak into the next case.
-            let reply = await MoneyChat(queries: queries, engine: engine, strategy: strategy).ask(item.question)
-            if !matches(reply, expected: item.expected) { failures.append("\(item.question) → \(reply)") }
+            // A fresh chat per conversation, so one mistake doesn't leak into the next case.
+            let chat = MoneyChat(queries: queries, engine: engine, strategy: strategy)
+            var reply = MoneyChat.Reply.failed("No question")
+            for question in item.questions {
+                reply = await chat.ask(question)
+            }
+            if !matches(reply, expected: item.expected) {
+                failures.append("\(item.questions.joined(separator: " ⟶ ")) → \(reply)")
+            }
         }
         return TaskResult(
             name: "Chat (\(strategy.rawValue))", passed: chatCases.count - failures.count, total: chatCases.count,
@@ -121,26 +147,27 @@ public enum EvalSuite {
             failures: tips.count < 3 ? ["\(3 - tips.count) tips dropped or missing"] : [])
     }
 
-    static func matches(_ reply: MoneyChat.Reply, expected: Decimal) -> Bool {
+    static func matches(_ reply: MoneyChat.Reply, expected: [Decimal]) -> Bool {
+        let shown: Set<Decimal>
         switch reply {
         case .answer(let text):
-            return GroundingCheck.amounts(in: text).contains(expected)
+            shown = GroundingCheck.amounts(in: text)
         case .computed(let answer):
             switch answer {
-            case .categoryTotal(_, _, let total, _, _), .merchantTotal(_, _, let total, _, _):
-                return total == expected
+            case .categoryTotal(_, _, let total, _, _), .merchantTotal(_, _, let total, _, _), .forecast(_, let total, _),
+                .subscriptions(_, let total, _):
+                shown = [total]
             case .monthSummary(_, let spent, _, _, _):
-                return spent == expected
-            case .forecast(_, let total, _):
-                return total == expected
-            case .subscriptions(_, let total, _):
-                return total == expected
+                shown = [spent]
+            case .transactionList(_, _, _, let payments, _, let total, _):
+                shown = Set(payments.map(\.amount)).union([total])
             case .merchantNotFound, .notUnderstood:
-                return false
+                shown = []
             }
         case .notGrounded, .failed:
-            return false
+            shown = []
         }
+        return Set(expected).isSubset(of: shown)
     }
 
     private static func seconds(since start: ContinuousClock.Instant) -> Double {

@@ -37,7 +37,7 @@ Swift does the math, the LLM does the language. The model never computes totals;
 - Choose your AI engine: Apple Intelligence, or an open model (Qwen3 0.6B / 1.7B / Qwen3.5 2B) downloaded in the app and run with MLX. Older iPhones get AI too, and anyone can switch to compare.
 - On-device AI, optional at runtime:
   - categories for shops the rules don't know (never overriding the user)
-  - "Ask your money" chat: the model reads data only through tools, and answers with amounts that didn't come from the data are withheld (grounding check)
+  - "Ask your money" chat: totals, lists of individual payments and follow-up questions ("nabroji te transakcije"); numbers always come from Swift, never from the model
   - three saving tips per month, phrased from signals Trag computes
 - English and Bosnian (String Catalog, proper Bosnian plurals)
 
@@ -57,10 +57,12 @@ Swift does the math, the LLM does the language. The model never computes totals;
 - **Two chat strategies.** *Tool calling*: the model calls Trag's tools and writes the answer; amounts are verified by `GroundingCheck`. *Structured intent*: the model only fills in what was asked (category, shop, month); Swift computes the answer and the app phrases it in the user's language, so small models can't invent numbers and answers can be in Bosnian.
 - **Evals, not vibes.** `EvalSuite` scores categories, chat and tips on fake data for any engine and strategy. It runs in tests on a Mac (`./scripts/ai-evals.sh`, Apple Intelligence) and in the app's **AI lab** on a phone, for downloaded models.
 
-| Apple Intelligence (Mac) | Categories | Chat | Tips |
+| Apple Intelligence (Mac) | Categories | Chat (9 cases incl. lists and follow-ups) | Tips |
 |---|---|---|---|
-| Tool calling | 10/10 | 6/6 (1.7 s) | 3/3 |
-| Structured intent | 10/10 | 6/6 (0.9 s) | 3/3 |
+| Tool calling | 10/10 | 7–8/9 (2.5 s) | 3/3 |
+| **Structured intent** (default) | 10/10 | **9/9** every run (1.2 s) | 3/3 |
+
+Structured intent is the default for every engine: in these evals it was more reliable than tool calling even on Apple's model, about twice as fast, and its answers are written by the app in the user's language (Bosnian). Tool calling remains available in the AI lab for comparison.
 
 Downloaded models are scored on device in the AI lab.
 

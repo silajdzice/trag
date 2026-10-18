@@ -27,7 +27,7 @@ grep -E "Test run with" "$DERIVED/package-test.log" | sed 's/^/  /'
 echo "▸ App build and tests on $SIMULATOR"
 run "App build or tests" app-test xcodebuild -quiet -skipMacroValidation -project Trag.xcodeproj -scheme Trag \
   -destination "platform=iOS Simulator,name=$SIMULATOR" -derivedDataPath "$DERIVED" test
-grep -cE "^Test case .* passed" "$DERIVED/app-test.log" | xargs -I{} echo "  {} app tests passed"
+grep -cE "^Test case .* pass" "$DERIVED/app-test.log" | xargs -I{} echo "  {} app tests passed"
 if grep -E "warning:" "$DERIVED/app-test.log" | grep -vE "checkouts|SourcePackages|\.dia" | grep -q .; then
   echo "✘ Warnings in Trag sources"; exit 1
 fi
