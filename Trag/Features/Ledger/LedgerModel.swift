@@ -12,6 +12,11 @@ final class LedgerModel {
     }
     private(set) var summary: SpendingSummary?
     private(set) var monthTransactions: [BankTransaction] = []
+    /// Spending in the month before the selected one, for comparison.
+    private(set) var previousMonthSpent: Decimal?
+    private(set) var history: [MonthlySpending] = []
+    private(set) var recurringPayments: [RecurringPayment] = []
+    private(set) var forecast: SpendingForecast?
     private(set) var categorizer = RuleBasedCategorizer()
     private(set) var loadError: String?
 
@@ -27,8 +32,12 @@ final class LedgerModel {
     func reload() {
         do {
             categorizer = RuleBasedCategorizer(overrides: try store.categoryOverrides())
-            byMonth = try store.transactions().groupedByMonth()
+            let transactions = try store.transactions()
+            byMonth = transactions.groupedByMonth()
             months = byMonth.keys.sorted(by: >)
+            history = MonthlySpending.history(transactions)
+            recurringPayments = RecurringPaymentDetector.detect(in: transactions, categorizer: categorizer)
+            forecast = SpendingForecast(transactions: transactions, recurringPayments: recurringPayments)
             loadError = nil
         } catch {
             Log.storage.error("Loading transactions failed: \(String(describing: error), privacy: .public)")
@@ -60,8 +69,19 @@ final class LedgerModel {
         }
     }
 
+    /// Change in spending against the previous month, e.g. 0.12 for 12% more. Nil without a previous month.
+    var changeFromPreviousMonth: Double? {
+        guard let previous = previousMonthSpent, previous > 0, let spent = summary?.totalSpent else { return nil }
+        return ((spent - previous) / previous).doubleValue
+    }
+
+    var recurringMonthlyTotal: Decimal {
+        recurringPayments.reduce(0) { $0 + $1.monthlyAmount }
+    }
+
     private func updateSelection() {
         monthTransactions = selectedMonth.flatMap { byMonth[$0] } ?? []
         summary = selectedMonth == nil ? nil : SpendingSummary(transactions: monthTransactions, categorizer: categorizer)
+        previousMonthSpent = selectedMonth.flatMap { month in history.first { $0.month == month.previous() }?.spent }
     }
 }

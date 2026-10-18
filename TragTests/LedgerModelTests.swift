@@ -16,7 +16,7 @@ import Testing
 
     @Test func selectsLatestMonthByDefault() {
         let ledger = LedgerModel.preview()
-        #expect(ledger.months == [Month(year: 2026, month: 9), Month(year: 2026, month: 8)])
+        #expect(ledger.months == [Month(year: 2026, month: 9), Month(year: 2026, month: 8), Month(year: 2026, month: 7)])
         #expect(ledger.selectedMonth == Month(year: 2026, month: 9))
         #expect(ledger.monthTransactions.count == 9)
     }
@@ -25,8 +25,8 @@ import Testing
         let ledger = LedgerModel.preview()
         ledger.selectedMonth = Month(year: 2026, month: 8)
         let summary = try #require(ledger.summary)
-        #expect(summary.totalSpent == Decimal(string: "55.10"))
-        #expect(summary.byCategory.map(\.key) == [.groceries])
+        #expect(summary.totalSpent == Decimal(string: "139.75"))
+        #expect(summary.byCategory.map(\.key) == [.utilities, .groceries, .subscriptions])
     }
 
     @Test func userCategoryAppliesToAllTransactionsFromMerchant() throws {
@@ -48,5 +48,25 @@ import Testing
         #expect(!ledger.canChangeCategory(of: byName["ATM 090101"]!))
         #expect(!ledger.canChangeCategory(of: byName["Union banka"]!))
         #expect(!ledger.canChangeCategory(of: byName["ACME DOO"]!))
+    }
+
+    @Test func comparesWithPreviousMonth() throws {
+        let ledger = LedgerModel.preview()
+        ledger.selectedMonth = Month(year: 2026, month: 8)
+        let change = try #require(ledger.changeFromPreviousMonth)
+        // July 215.80 → August 139.75
+        #expect(abs(change - (139.75 - 215.80) / 215.80) < 0.0001)
+
+        ledger.selectedMonth = Month(year: 2026, month: 7)
+        #expect(ledger.changeFromPreviousMonth == nil)
+    }
+
+    @Test func detectsRecurringPaymentsAndForecasts() throws {
+        let ledger = LedgerModel.preview()
+        #expect(Set(ledger.recurringPayments.map(\.kind)) == [.subscription, .bill])
+        #expect(ledger.recurringPayments.contains { $0.name == "GOOGLE *YouTubePremium" })
+        let forecast = try #require(ledger.forecast)
+        #expect(forecast.month == Month(year: 2026, month: 10))
+        #expect(forecast.basedOnMonths == 3)
     }
 }

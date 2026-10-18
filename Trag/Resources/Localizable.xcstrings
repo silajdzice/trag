@@ -1,6 +1,36 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "%@ less than last month": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ manje nego prošli mjesec"
+          }
+        }
+      }
+    },
+    "%@ more than last month": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ više nego prošli mjesec"
+          }
+        }
+      }
+    },
+    "%@ per month": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ mjesečno"
+          }
+        }
+      }
+    },
     "%@, received %@": {
       "localizations": {
         "bs": {
@@ -113,6 +143,16 @@
         }
       }
     },
+    "Amount": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Iznos"
+          }
+        }
+      }
+    },
     "Applies to all transactions from %@.": {
       "localizations": {
         "bs": {
@@ -139,6 +179,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Banka još nije podržana"
+          }
+        }
+      }
+    },
+    "Bills": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Računi"
           }
         }
       }
@@ -253,6 +303,72 @@
         }
       }
     },
+    "Estimate based on %lld months of history.": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Estimate based on %lld month of history."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Estimate based on %lld months of history."
+                }
+              }
+            }
+          }
+        },
+        "bs": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Procjena na osnovu %lld mjeseca historije."
+                }
+              },
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Procjena na osnovu %lld mjeseca historije."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Procjena na osnovu %lld mjeseci historije."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Everything else": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sve ostalo"
+          }
+        }
+      }
+    },
+    "Expected spending": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Očekivana potrošnja"
+          }
+        }
+      }
+    },
     "Groceries": {
       "localizations": {
         "bs": {
@@ -339,6 +455,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mjesec"
+          }
+        }
+      }
+    },
+    "Next charge %@": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sljedeće plaćanje %@"
+          }
+        }
+      }
+    },
+    "Next month": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sljedeći mjesec"
+          }
+        }
+      }
+    },
+    "No recurring payments yet": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Još nema ponavljajućih plaćanja"
           }
         }
       }
@@ -433,6 +579,26 @@
         }
       }
     },
+    "Same as last month": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Isto kao prošli mjesec"
+          }
+        }
+      }
+    },
+    "See all": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prikaži sve"
+          }
+        }
+      }
+    },
     "Shopping": {
       "localizations": {
         "bs": {
@@ -463,6 +629,26 @@
         }
       }
     },
+    "Spending by category": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Potrošnja po kategorijama"
+          }
+        }
+      }
+    },
+    "Spending by month": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Potrošnja po mjesecima"
+          }
+        }
+      }
+    },
     "Spent": {
       "localizations": {
         "bs": {
@@ -483,12 +669,32 @@
         }
       }
     },
+    "Subscriptions & bills": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pretplate i računi"
+          }
+        }
+      }
+    },
     "The statement looks empty or its layout is different from what Trag expects.": {
       "localizations": {
         "bs": {
           "stringUnit": {
             "state": "translated",
             "value": "Izvod je prazan ili izgleda drugačije nego što Trag očekuje."
+          }
+        }
+      }
+    },
+    "They appear once you have imported at least two months of statements.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pojavit će se kada uvezeš izvode za najmanje dva mjeseca."
           }
         }
       }

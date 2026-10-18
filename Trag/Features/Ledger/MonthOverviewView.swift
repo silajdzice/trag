@@ -12,7 +12,7 @@ struct MonthOverviewView: View {
             if let summary = ledger.summary, let month = ledger.selectedMonth {
                 Section {
                     MonthPicker(months: ledger.months, selection: $ledger.selectedMonth)
-                    AmountRow(Text("Spent"), amount: summary.totalSpent, currency: currency)
+                    SpentHeader(summary: summary, change: ledger.changeFromPreviousMonth, currency: currency)
                     AmountRow(Text("Income"), amount: summary.totalIncome, currency: currency)
                 } footer: {
                     Text("\(ledger.monthTransactions.count) transactions")
@@ -20,9 +20,35 @@ struct MonthOverviewView: View {
                 .id(month)
 
                 Section("Categories") {
+                    CategoryDonutChart(lines: summary.byCategory, total: summary.totalSpent, currency: currency)
                     ForEach(summary.byCategory) { line in
                         CategoryRow(line: line, share: summary.share(of: line), currency: currency)
                     }
+                }
+
+                if ledger.history.count > 1 {
+                    Section("Spending by month") {
+                        MonthlyTrendChart(history: ledger.history, selected: month, currency: currency)
+                    }
+                }
+
+                if !ledger.recurringPayments.isEmpty {
+                    Section {
+                        ForEach(ledger.recurringPayments.prefix(3)) { RecurringPaymentRow(payment: $0) }
+                        NavigationLink {
+                            RecurringPaymentsView(payments: ledger.recurringPayments)
+                        } label: {
+                            Text("See all")
+                        }
+                    } header: {
+                        Text("Subscriptions & bills")
+                    } footer: {
+                        Text("\(ledger.recurringMonthlyTotal.moneyFormatted(currency: currency)) per month")
+                    }
+                }
+
+                if let forecast = ledger.forecast {
+                    ForecastSection(forecast: forecast, currency: currency)
                 }
 
                 Section("Top places") {
@@ -78,6 +104,71 @@ private struct MonthPicker: View {
                 Text(month.startDate(), format: .dateTime.month(.wide).year())
                     .tag(Optional(month))
             }
+        }
+    }
+}
+
+/// The month's total, large, with the change against the previous month.
+private struct SpentHeader: View {
+    let summary: SpendingSummary
+    let change: Double?
+    let currency: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("Spent")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+            Text(summary.totalSpent.moneyFormatted(currency: currency))
+                .font(.largeTitle.bold())
+                .monospacedDigit()
+                .minimumScaleFactor(0.6)
+                .lineLimit(1)
+            if let change {
+                changeLabel(change)
+                    .font(.subheadline)
+            }
+        }
+        .padding(.vertical, 4)
+        .accessibilityElement(children: .combine)
+    }
+
+    @ViewBuilder
+    private func changeLabel(_ change: Double) -> some View {
+        let percent = abs(change).formatted(.percent.precision(.fractionLength(0)))
+        if abs(change) < 0.005 {
+            Label("Same as last month", systemImage: "equal")
+                .foregroundStyle(.secondary)
+        } else if change > 0 {
+            Label("\(percent) more than last month", systemImage: "arrow.up.right")
+                .foregroundStyle(.orange)
+        } else {
+            Label("\(percent) less than last month", systemImage: "arrow.down.right")
+                .foregroundStyle(.green)
+        }
+    }
+}
+
+private struct ForecastSection: View {
+    let forecast: SpendingForecast
+    let currency: String
+
+    var body: some View {
+        Section {
+            LabeledContent {
+                Text(forecast.total.moneyFormatted(currency: currency))
+                    .font(.headline)
+                    .monospacedDigit()
+            } label: {
+                Text("Expected spending")
+                Text(forecast.month.startDate(), format: .dateTime.month(.wide).year())
+            }
+            AmountRow(Text("Subscriptions & bills"), amount: forecast.recurring, currency: currency)
+            AmountRow(Text("Everything else"), amount: forecast.variable, currency: currency)
+        } header: {
+            Text("Next month")
+        } footer: {
+            Text("Estimate based on \(forecast.basedOnMonths) months of history.")
         }
     }
 }

@@ -25,11 +25,11 @@ Assumes about 15–20 h/week alongside your job and applications. Each milestone
 - [x] Rule-based categories (no AI yet): 81% of real spending categorised by rules alone
 
 ## M2: Insights core (week 2–3)
-- [ ] Spend by category, top merchants, month vs month
-- [ ] Recurring payment / subscription detection
-- [ ] Next-month prediction
-- [ ] Dashboard with Swift Charts
-- [ ] Unit tests for all of `Insights` (Swift Testing)
+- [x] Spend by category, top merchants, month vs month (% change)
+- [x] Recurring payment / subscription detection (stable foreign price or bills; everyday categories excluded)
+- [x] Next-month prediction (recurring + average of the rest, last 3 months)
+- [x] Dashboard with Swift Charts: category donut, monthly bars; light/dark checked
+- [x] Unit tests for all of `Insights` (Swift Testing)
 
 ## M3: AI layer (week 3–4)
 - [ ] AI categorization for unknown merchants (structured output), with rules taking priority

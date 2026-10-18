@@ -60,11 +60,11 @@ extension SpendingCategory {
         case .shopping: .indigo
         case .entertainment: .teal
         case .subscriptions: .blue
-        case .transport: .gray
-        case .cash: .green
-        case .fees: .secondary
+        case .transport: Color(red: 0.36, green: 0.42, blue: 0.55)
+        case .cash: Color(red: 0.55, green: 0.62, blue: 0.20)
+        case .fees: Color(.systemGray)
         case .income: .green
-        case .other: .secondary
+        case .other: Color(.systemGray3)
         }
     }
 

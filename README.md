@@ -27,6 +27,9 @@ Swift does the math, the LLM does the language. The model never computes totals;
 ## Features (so far)
 - Import Union banka PDF statements; every import is checked against the statement's own totals
 - Months of history stored on-device (SwiftData), re-imports never duplicate
+- Dashboard: category donut, spending per month, change vs last month
+- Subscriptions and bills found automatically, with next expected charge
+- Next-month spending estimate
 - Spending by category and by merchant, per month
 - Rule-based categories for common BiH merchants, plus your own choice per merchant
 - English and Bosnian (String Catalog, proper Bosnian plurals)
