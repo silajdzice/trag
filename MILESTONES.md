@@ -32,11 +32,13 @@ Assumes about 15–20 h/week alongside your job and applications. Each milestone
 - [x] Unit tests for all of `Insights` (Swift Testing)
 
 ## M3: AI layer (week 3–4)
-- [ ] AI categorization for unknown merchants (structured output), with rules taking priority
-- [ ] Tools: `spendingByCategory`, `transactions(matching:)`, `recurringPayments`, `forecast`
-- [ ] "Ask your money" chat screen
-- [ ] Monthly insight: 3 saving tips grounded in real numbers
-- [ ] Graceful fallback when the model isn't available (your iPhone 13 = test device)
+- [x] AI categorization for unknown merchants (@Generable), user > rules > AI; each merchant asked once; ✨ marker
+- [x] Tools: monthSummary, spendingByCategory, spendingAtMerchant, subscriptionsAndBills, nextMonthEstimate
+- [x] "Ask your money" chat with grounding check (answers with invented amounts are withheld)
+- [x] Monthly insight: 3 saving tips from Swift-computed signals, grounded
+- [x] Graceful fallback when the model isn't available, with the reason shown (verify on the iPhone 13)
+
+AI evals (scripts/ai-evals.sh, real model): categories 10/10, chat 4/4 grounded incl. Bosnian questions.
 
 ## M4: Polish + ship (week 5–6)
 - [ ] Design pass (ideally with your wife): onboarding, dashboard, empty states

@@ -4,4 +4,5 @@ import OSLog
 enum Log {
     static let `import` = Logger(subsystem: "dev.edhem.trag", category: "import")
     static let storage = Logger(subsystem: "dev.edhem.trag", category: "storage")
+    static let ai = Logger(subsystem: "dev.edhem.trag", category: "ai")
 }

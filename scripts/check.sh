@@ -10,7 +10,7 @@ echo "▸ Format"
 swift format lint --strict --recursive --parallel Trag TragTests TragKit/Sources TragKit/Tests TragKit/Package.swift
 
 echo "▸ Package tests"
-(cd TragKit && swift test -Xswiftc -warnings-as-errors 2>&1 | grep -E "Test run|error|failed|✘")
+(cd TragKit && swift test --skip AICoachEvals -Xswiftc -warnings-as-errors 2>&1 | grep -E "Test run|error|failed|✘")
 
 echo "▸ App build and tests on $SIMULATOR"
 LOG="$DERIVED/app-test.log"

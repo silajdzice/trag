@@ -1,11 +1,19 @@
+import AICoach
 import SwiftUI
 
 struct RootView: View {
     @State private var ledger: LedgerModel
     @State private var importModel: StatementImportModel
+    @State private var askModel: AskMoneyModel?
+    private let isAIAvailable: Bool
 
-    init(store: TransactionStore) {
-        _ledger = State(initialValue: LedgerModel(store: store))
+    init(store: TransactionStore, aiAvailability: AIAvailability = .current) {
+        isAIAvailable = aiAvailability.isAvailable
+        _ledger = State(
+            initialValue: LedgerModel(
+                store: store,
+                suggester: aiAvailability.isAvailable ? CategorySuggester() : nil,
+                tipsGenerator: aiAvailability.isAvailable ? SavingTipsGenerator() : nil))
         _importModel = State(initialValue: StatementImportModel(store: store))
     }
 
@@ -14,6 +22,13 @@ struct RootView: View {
             content
                 .navigationTitle(Text(verbatim: "Trag"))
                 .toolbar {
+                    if !ledger.isEmpty, isAIAvailable {
+                        ToolbarItem(placement: .topBarLeading) {
+                            Button("Ask your money", systemImage: "sparkles") {
+                                askModel = AskMoneyModel(queries: ledger.queries)
+                            }
+                        }
+                    }
                     if !ledger.isEmpty {
                         ToolbarItem(placement: .topBarTrailing) {
                             Button("Import statement", systemImage: "square.and.arrow.down") {
@@ -27,6 +42,7 @@ struct RootView: View {
             Task {
                 await importModel.importFile(result)
                 ledger.reload()
+                await ledger.suggestCategories()
             }
         }
         .safeAreaInset(edge: .bottom) {
@@ -43,7 +59,13 @@ struct RootView: View {
             }
         }
         .animation(.default, value: importModel.state)
-        .task { ledger.reload() }
+        .sheet(item: $askModel) { model in
+            AskMoneyView(model: model)
+        }
+        .task {
+            ledger.reload()
+            await ledger.suggestCategories()
+        }
     }
 
     @ViewBuilder

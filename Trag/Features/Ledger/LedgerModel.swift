@@ -1,3 +1,4 @@
+import AICoach
 import Foundation
 import Insights
 import Observation
@@ -17,22 +18,56 @@ final class LedgerModel {
     private(set) var history: [MonthlySpending] = []
     private(set) var recurringPayments: [RecurringPayment] = []
     private(set) var forecast: SpendingForecast?
+    private(set) var tips: [Month: [SavingTip]] = [:]
+    private(set) var isLoadingTips = false
+    /// True while the on-device model is categorising unknown merchants.
+    private(set) var isSuggestingCategories = false
+    /// Exact data access for the AI features.
+    private(set) var queries = SpendingQueries(transactions: [], categorizer: RuleBasedCategorizer())
     private(set) var categorizer = RuleBasedCategorizer()
     private(set) var loadError: String?
 
     private let store: TransactionStore
+    private let suggester: (any CategorySuggesting)?
+    private let tipsGenerator: SavingTipsGenerator?
     private var byMonth: [Month: [BankTransaction]] = [:]
+    private var allTransactions: [BankTransaction] = []
+    private var askedMerchants: Set<String> = []
 
-    init(store: TransactionStore) {
+    /// - Parameters:
+    ///   - suggester: the on-device model for categories, or nil where it isn't available.
+    ///   - tipsGenerator: the on-device model for saving tips, or nil where it isn't available.
+    init(store: TransactionStore, suggester: (any CategorySuggesting)? = nil, tipsGenerator: SavingTipsGenerator? = nil) {
         self.store = store
+        self.suggester = suggester
+        self.tipsGenerator = tipsGenerator
+    }
+
+    var canGenerateTips: Bool { tipsGenerator != nil }
+
+    func loadTips(for month: Month) async {
+        guard let tipsGenerator, !isLoadingTips else { return }
+        isLoadingTips = true
+        defer { isLoadingTips = false }
+        do {
+            tips[month] = try await tipsGenerator.tips(for: month, queries: queries)
+        } catch {
+            Log.ai.error("Tips failed: \(String(describing: error), privacy: .public)")
+            tips[month] = []
+        }
     }
 
     var isEmpty: Bool { months.isEmpty }
 
     func reload() {
         do {
-            categorizer = RuleBasedCategorizer(overrides: try store.categoryOverrides())
+            let suggestions = try store.categorySuggestions()
+            askedMerchants = Set(suggestions.keys)
+            categorizer = RuleBasedCategorizer(overrides: try store.categoryOverrides(), suggestions: suggestions)
             let transactions = try store.transactions()
+            allTransactions = transactions
+            queries = SpendingQueries(transactions: transactions, categorizer: categorizer)
+            tips = [:]
             byMonth = transactions.groupedByMonth()
             months = byMonth.keys.sorted(by: >)
             history = MonthlySpending.history(transactions)
@@ -52,6 +87,33 @@ final class LedgerModel {
 
     func category(for transaction: BankTransaction) -> SpendingCategory {
         categorizer.category(for: transaction)
+    }
+
+    func categorySource(for transaction: BankTransaction) -> CategorySource {
+        categorizer.categorization(for: transaction).source
+    }
+
+    /// Asks the on-device model about merchants nothing else recognised. Each merchant is asked once, ever.
+    func suggestCategories() async {
+        guard let suggester, !isSuggestingCategories else { return }
+        let unknown = Set(
+            allTransactions
+                .filter { canChangeCategory(of: $0) && categorizer.categorization(for: $0).source == .none }
+                .map(\.counterparty)
+        )
+        .filter { !askedMerchants.contains(MerchantKey.normalize($0)) }
+        guard !unknown.isEmpty else { return }
+
+        isSuggestingCategories = true
+        defer { isSuggestingCategories = false }
+        do {
+            let suggestions = try await suggester.suggest(for: unknown.sorted())
+            try store.saveSuggestions(suggestions)
+            Log.ai.info("Model suggested categories for \(suggestions.count) merchants")
+            reload()
+        } catch {
+            Log.ai.error("Category suggestions failed: \(String(describing: error), privacy: .public)")
+        }
     }
 
     /// Cash, fees and income are categorised by transaction type, so only purchases and bills can be changed.

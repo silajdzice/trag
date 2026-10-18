@@ -32,6 +32,10 @@ Swift does the math, the LLM does the language. The model never computes totals;
 - Next-month spending estimate
 - Spending by category and by merchant, per month
 - Rule-based categories for common BiH merchants, plus your own choice per merchant
+- On-device AI (Apple Foundation Models), optional at runtime:
+  - categories for shops the rules don't know (never overriding the user)
+  - "Ask your money" chat: the model reads data only through tools, and answers with amounts that didn't come from the data are withheld (grounding check)
+  - three saving tips per month, phrased from signals Trag computes
 - English and Bosnian (String Catalog, proper Bosnian plurals)
 
 ## Supported banks
@@ -44,6 +48,12 @@ Swift does the math, the LLM does the language. The model never computes totals;
 2. Implement `StatementParser` in `TragKit/Sources/StatementParsing/Banks/`.
 3. Register it in `StatementParserRegistry`.
 4. Add interpreter tests with sanitized rows; real statements go in `test-data/private/` (git-ignored) and are checked automatically by the PDF tests.
+
+## AI evals
+The on-device model is nondeterministic, so its quality is scored separately (needs a Mac with Apple Intelligence):
+```bash
+./scripts/ai-evals.sh
+```
 
 ## Quality gate
 ```bash

@@ -21,6 +21,13 @@ Trag is a portfolio app: the code will be read by hiring managers. Every merged 
 - Accessibility: Dynamic Type up to AX5, VoiceOver labels for amounts and charts, sufficient contrast, no information conveyed by color alone.
 - Light/dark mode. Every user-facing string lives in `Localizable.xcstrings` with English and Bosnian (plural variants where counts appear); `scripts/check-localization.py` fails on missing or untranslated keys. Money, dates and months use the user's locale. Packages hold no UI strings.
 
+## AI
+- Swift does math, the model does language. The model sees data only through tools that return exact, Swift-computed text.
+- Every AI answer passes `GroundingCheck`: amounts not present in tool output are withheld.
+- AI is optional at runtime; every screen works without it and explains why it's unavailable.
+- AI suggestions never override user choices and are visibly marked.
+- Prompt changes are measured with `scripts/ai-evals.sh` (scored evals against the real model), not unit tests.
+
 ## Testing
 - Swift Testing for packages; each bank parser has sanitized interpreter tests plus footer-total validation against private statements.
 - Snapshot of behaviour, not implementation: test public APIs.

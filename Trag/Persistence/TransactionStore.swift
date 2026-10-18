@@ -38,19 +38,48 @@ final class TransactionStore {
         return try context.fetch(descriptor).map(\.bankTransaction)
     }
 
+    /// The user's own choices.
     func categoryOverrides() throws -> [String: SpendingCategory] {
-        try context.fetch(FetchDescriptor<CategoryOverride>()).reduce(into: [:]) { result, override in
-            result[override.merchantKey] = SpendingCategory(rawValue: override.categoryRawValue)
-        }
+        try categories(from: .user)
+    }
+
+    /// On-device model suggestions, including `.other` for merchants it was unsure about.
+    func categorySuggestions() throws -> [String: SpendingCategory] {
+        try categories(from: .ai)
     }
 
     func setCategory(_ category: SpendingCategory, forMerchant merchantKey: String) throws {
-        let descriptor = FetchDescriptor<CategoryOverride>(predicate: #Predicate { $0.merchantKey == merchantKey })
-        if let override = try context.fetch(descriptor).first {
-            override.categoryRawValue = category.rawValue
+        if let existing = try override(for: merchantKey) {
+            existing.categoryRawValue = category.rawValue
+            existing.sourceRawValue = CategoryOverride.Source.user.rawValue
         } else {
-            context.insert(CategoryOverride(merchantKey: merchantKey, categoryRawValue: category.rawValue))
+            context.insert(CategoryOverride(merchantKey: merchantKey, categoryRawValue: category.rawValue, source: .user))
         }
         try context.save()
+    }
+
+    /// Saves model suggestions without ever replacing a choice the user made.
+    func saveSuggestions(_ suggestions: [String: SpendingCategory]) throws {
+        for (merchantKey, category) in suggestions {
+            if let existing = try override(for: merchantKey) {
+                guard existing.source == .ai else { continue }
+                existing.categoryRawValue = category.rawValue
+            } else {
+                context.insert(CategoryOverride(merchantKey: merchantKey, categoryRawValue: category.rawValue, source: .ai))
+            }
+        }
+        try context.save()
+    }
+
+    private func override(for merchantKey: String) throws -> CategoryOverride? {
+        try context.fetch(FetchDescriptor<CategoryOverride>(predicate: #Predicate { $0.merchantKey == merchantKey })).first
+    }
+
+    private func categories(from source: CategoryOverride.Source) throws -> [String: SpendingCategory] {
+        let raw = source.rawValue
+        let descriptor = FetchDescriptor<CategoryOverride>(predicate: #Predicate { $0.sourceRawValue == raw })
+        return try context.fetch(descriptor).reduce(into: [:]) { result, override in
+            result[override.merchantKey] = SpendingCategory(rawValue: override.categoryRawValue)
+        }
     }
 }

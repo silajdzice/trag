@@ -20,6 +20,10 @@ struct MonthOverviewView: View {
                 .id(month)
 
                 Section("Categories") {
+                    if ledger.isSuggestingCategories {
+                        ProgressView("Categorizing new shops on this iPhone…")
+                            .font(.footnote)
+                    }
                     CategoryDonutChart(lines: summary.byCategory, total: summary.totalSpent, currency: currency)
                     ForEach(summary.byCategory) { line in
                         CategoryRow(line: line, share: summary.share(of: line), currency: currency)
@@ -51,6 +55,12 @@ struct MonthOverviewView: View {
                     ForecastSection(forecast: forecast, currency: currency)
                 }
 
+                if ledger.canGenerateTips {
+                    TipsSection(tips: ledger.tips[month], isLoading: ledger.isLoadingTips) {
+                        Task { await ledger.loadTips(for: month) }
+                    }
+                }
+
                 Section("Top places") {
                     ForEach(summary.byMerchant.prefix(5)) { line in
                         AmountRow(Text(verbatim: line.key), amount: line.total, currency: currency)
@@ -59,7 +69,10 @@ struct MonthOverviewView: View {
 
                 Section("Transactions") {
                     ForEach(ledger.monthTransactions) { transaction in
-                        let row = TransactionRow(transaction: transaction, category: ledger.category(for: transaction))
+                        let row = TransactionRow(
+                            transaction: transaction,
+                            category: ledger.category(for: transaction),
+                            isAISuggested: ledger.categorySource(for: transaction) == .ai)
                         if ledger.canChangeCategory(of: transaction) {
                             Button {
                                 editingTransaction = transaction
@@ -221,13 +234,54 @@ struct AmountRow: View {
     }
 }
 
+private struct TipsSection: View {
+    let tips: [SavingTip]?
+    let isLoading: Bool
+    let onGenerate: () -> Void
+
+    var body: some View {
+        Section {
+            if let tips, !tips.isEmpty {
+                ForEach(tips, id: \.self) { tip in
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(tip.title).font(.headline)
+                        Text(tip.detail).foregroundStyle(.secondary)
+                    }
+                    .padding(.vertical, 2)
+                }
+            } else if isLoading {
+                ProgressView("Thinking…")
+            } else {
+                Button(action: onGenerate) {
+                    Label("Get 3 tips for this month", systemImage: "sparkles")
+                }
+                if tips?.isEmpty == true {
+                    Text("Couldn't write tips this time. Try again.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        } header: {
+            Text("Savings tips")
+        } footer: {
+            Text("Written by the on-device AI from your numbers.")
+        }
+    }
+}
+
 private struct AIStatusLabel: View {
     var body: some View {
         Group {
             switch AIAvailability.current {
             case .available:
                 Label("On-device AI available", systemImage: "sparkles")
-            case .unavailable:
+            case .unavailable(.deviceNotEligible):
+                Label("This iPhone doesn't support Apple Intelligence. Everything else works.", systemImage: "sparkles.slash")
+            case .unavailable(.appleIntelligenceNotEnabled):
+                Label("Turn on Apple Intelligence in Settings to use AI features.", systemImage: "sparkles.slash")
+            case .unavailable(.modelNotReady):
+                Label("The on-device AI is still getting ready.", systemImage: "hourglass")
+            case .unavailable(.unknown):
                 Label("On-device AI unavailable. Insights still work.", systemImage: "sparkles.slash")
             }
         }

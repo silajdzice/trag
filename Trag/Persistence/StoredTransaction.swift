@@ -56,14 +56,24 @@ final class StoredTransaction {
     }
 }
 
-/// The user's own category for a merchant. Applies to all of that merchant's transactions.
+/// A category chosen for a merchant, by the user or suggested by the on-device model. Applies to all its transactions.
 @Model
 final class CategoryOverride {
+    enum Source: String {
+        case user
+        case ai
+    }
+
     @Attribute(.unique) var merchantKey: String
     var categoryRawValue: String
+    /// Added after the first release; existing rows were all user choices.
+    var sourceRawValue: String = Source.user.rawValue
 
-    init(merchantKey: String, categoryRawValue: String) {
+    init(merchantKey: String, categoryRawValue: String, source: Source) {
         self.merchantKey = merchantKey
         self.categoryRawValue = categoryRawValue
+        sourceRawValue = source.rawValue
     }
+
+    var source: Source { Source(rawValue: sourceRawValue) ?? .user }
 }

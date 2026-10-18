@@ -153,12 +153,42 @@
         }
       }
     },
+    "Answers are in English: Apple's on-device model doesn't support Bosnian yet.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Odgovori su na engleskom: Appleov model na uređaju još ne podržava bosanski."
+          }
+        }
+      }
+    },
     "Applies to all transactions from %@.": {
       "localizations": {
         "bs": {
           "stringUnit": {
             "state": "translated",
             "value": "Primjenjuje se na sve transakcije od %@."
+          }
+        }
+      }
+    },
+    "Ask about your spending": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pitaj o svojoj potrošnji"
+          }
+        }
+      }
+    },
+    "Ask your money": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pitaj svoj novac"
           }
         }
       }
@@ -223,12 +253,32 @@
         }
       }
     },
+    "Categorizing new shops on this iPhone…": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Razvrstavam nove prodavnice na ovom iPhoneu…"
+          }
+        }
+      }
+    },
     "Category": {
       "localizations": {
         "bs": {
           "stringUnit": {
             "state": "translated",
             "value": "Kategorija"
+          }
+        }
+      }
+    },
+    "Category suggested by AI": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kategoriju predložio AI"
           }
         }
       }
@@ -273,12 +323,32 @@
         }
       }
     },
+    "Couldn't write tips this time. Try again.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ovaj put nisam uspio napisati savjete. Pokušaj ponovo."
+          }
+        }
+      }
+    },
     "Dismiss": {
       "localizations": {
         "bs": {
           "stringUnit": {
             "state": "translated",
             "value": "Zatvori"
+          }
+        }
+      }
+    },
+    "Done": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gotovo"
           }
         }
       }
@@ -369,6 +439,16 @@
         }
       }
     },
+    "Get 3 tips for this month": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daj mi 3 savjeta za ovaj mjesec"
+          }
+        }
+      }
+    },
     "Groceries": {
       "localizations": {
         "bs": {
@@ -395,6 +475,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Stanovanje"
+          }
+        }
+      }
+    },
+    "How much did I spend on groceries this month?": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Koliko sam potrošio na namirnice ovaj mjesec?"
+          }
+        }
+      }
+    },
+    "How much will I spend next month?": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Koliko ću potrošiti sljedeći mjesec?"
+          }
+        }
+      }
+    },
+    "I couldn't find a reliable answer in your data. Try asking about a category, a shop or a month.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nisam našao pouzdan odgovor u tvojim podacima. Pitaj o kategoriji, prodavnici ili mjesecu."
           }
         }
       }
@@ -579,6 +689,16 @@
         }
       }
     },
+    "Runs entirely on this iPhone.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Radi u potpunosti na ovom iPhoneu."
+          }
+        }
+      }
+    },
     "Same as last month": {
       "localizations": {
         "bs": {
@@ -589,12 +709,32 @@
         }
       }
     },
+    "Savings tips": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Savjeti za uštedu"
+          }
+        }
+      }
+    },
     "See all": {
       "localizations": {
         "bs": {
           "stringUnit": {
             "state": "translated",
             "value": "Prikaži sve"
+          }
+        }
+      }
+    },
+    "Send": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pošalji"
           }
         }
       }
@@ -625,6 +765,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Nešto nije u redu"
+          }
+        }
+      }
+    },
+    "Something went wrong. Please try again.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nešto nije u redu. Pokušaj ponovo."
           }
         }
       }
@@ -679,6 +829,16 @@
         }
       }
     },
+    "The on-device AI is still getting ready.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI na uređaju se još priprema."
+          }
+        }
+      }
+    },
     "The statement looks empty or its layout is different from what Trag expects.": {
       "localizations": {
         "bs": {
@@ -695,6 +855,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pojavit će se kada uvezeš izvode za najmanje dva mjeseca."
+          }
+        }
+      }
+    },
+    "Thinking…": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Razmišljam…"
+          }
+        }
+      }
+    },
+    "This iPhone doesn't support Apple Intelligence. Everything else works.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ovaj iPhone ne podržava Apple Intelligence. Sve ostalo radi."
           }
         }
       }
@@ -749,12 +929,62 @@
         }
       }
     },
+    "Try asking": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Probaj pitati"
+          }
+        }
+      }
+    },
+    "Turn on Apple Intelligence in Settings to use AI features.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uključi Apple Intelligence u Postavkama za AI funkcije."
+          }
+        }
+      }
+    },
     "Utilities": {
       "localizations": {
         "bs": {
           "stringUnit": {
             "state": "translated",
             "value": "Režije"
+          }
+        }
+      }
+    },
+    "Where did most of my money go this month?": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gdje mi je otišlo najviše novca ovaj mjesec?"
+          }
+        }
+      }
+    },
+    "Which subscriptions and bills do I pay?": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Koje pretplate i račune plaćam?"
+          }
+        }
+      }
+    },
+    "Written by the on-device AI from your numbers.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Napisao AI na uređaju na osnovu tvojih brojeva."
           }
         }
       }
