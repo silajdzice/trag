@@ -28,8 +28,8 @@ final class LedgerModel {
     private(set) var loadError: String?
 
     private let store: TransactionStore
-    private let suggester: (any CategorySuggesting)?
-    private let tipsGenerator: SavingTipsGenerator?
+    private var suggester: (any CategorySuggesting)?
+    private var tipsGenerator: SavingTipsGenerator?
     private var byMonth: [Month: [BankTransaction]] = [:]
     private var allTransactions: [BankTransaction] = []
     private var askedMerchants: Set<String> = []
@@ -44,6 +44,13 @@ final class LedgerModel {
     }
 
     var canGenerateTips: Bool { tipsGenerator != nil }
+
+    /// Switches the AI engine for categories and tips (nil turns AI off). Cached tips came from the old engine.
+    func useEngine(_ engine: AIEngine?) {
+        suggester = engine.map { CategorySuggester(engine: $0) }
+        tipsGenerator = engine.map { SavingTipsGenerator(engine: $0) }
+        tips = [:]
+    }
 
     func loadTips(for month: Month) async {
         guard let tipsGenerator, !isLoadingTips else { return }

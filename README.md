@@ -8,13 +8,15 @@ Trag/                       SwiftUI app (thin UI layer, MainActor by default)
   App/                      entry point, root navigation
   Features/Import/          import flow: model + views
   Features/Ledger/          month overview, transactions, category picker
+  Features/Ask/             "Ask your money" chat
+  Features/Settings/        AI engine choice, model downloads, AI lab
   Persistence/              SwiftData models and TransactionStore
   Shared/                   formatting, category display, logging, preview data
   Resources/                assets, privacy manifest
 TragKit/                    Swift package with all logic (pure, tested)
   StatementParsing/         bank statement -> transactions; one parser per bank (Banks/)
   Insights/                 plain-Swift numbers: totals, merchants, fees
-  AICoach/                  on-device model layer (optional at runtime)
+  AICoach/                  AI engines (Apple / MLX), chat strategies, grounding, evals
 TragTests/                  app tests (store, ledger, import errors)
 docs/                       QUALITY.md (quality bar), bank format notes
 scripts/                    check.sh (quality gate), format.sh, check-localization.py
@@ -32,7 +34,8 @@ Swift does the math, the LLM does the language. The model never computes totals;
 - Next-month spending estimate
 - Spending by category and by merchant, per month
 - Rule-based categories for common BiH merchants, plus your own choice per merchant
-- On-device AI (Apple Foundation Models), optional at runtime:
+- Choose your AI engine: Apple Intelligence, or an open model (Qwen3 0.6B / 1.7B / Qwen3.5 2B) downloaded in the app and run with MLX. Older iPhones get AI too, and anyone can switch to compare.
+- On-device AI, optional at runtime:
   - categories for shops the rules don't know (never overriding the user)
   - "Ask your money" chat: the model reads data only through tools, and answers with amounts that didn't come from the data are withheld (grounding check)
   - three saving tips per month, phrased from signals Trag computes
@@ -49,11 +52,20 @@ Swift does the math, the LLM does the language. The model never computes totals;
 3. Register it in `StatementParserRegistry`.
 4. Add interpreter tests with sanitized rows; real statements go in `test-data/private/` (git-ignored) and are checked automatically by the PDF tests.
 
-## AI evals
-The on-device model is nondeterministic, so its quality is scored separately (needs a Mac with Apple Intelligence):
-```bash
-./scripts/ai-evals.sh
-```
+## AI architecture
+- **One API, two engines.** Every AI feature uses `LanguageModelSession`. Apple Intelligence uses `SystemLanguageModel`; downloaded models use `MLXLanguageModel` from `mlx-swift-lm`'s FoundationModels bridge, with grammar-constrained `@Generable` output.
+- **Two chat strategies.** *Tool calling*: the model calls Trag's tools and writes the answer; amounts are verified by `GroundingCheck`. *Structured intent*: the model only fills in what was asked (category, shop, month); Swift computes the answer and the app phrases it in the user's language, so small models can't invent numbers and answers can be in Bosnian.
+- **Evals, not vibes.** `EvalSuite` scores categories, chat and tips on fake data for any engine and strategy. It runs in tests on a Mac (`./scripts/ai-evals.sh`, Apple Intelligence) and in the app's **AI lab** on a phone, for downloaded models.
+
+| Apple Intelligence (Mac) | Categories | Chat | Tips |
+|---|---|---|---|
+| Tool calling | 10/10 | 6/6 (1.7 s) | 3/3 |
+| Structured intent | 10/10 | 6/6 (0.9 s) | 3/3 |
+
+Downloaded models are scored on device in the AI lab.
+
+## Building
+MLX compiles Metal shaders, so build with Xcode / `xcodebuild` (not `swift build`). Requires Xcode's Metal Toolchain component, and trusting the pinned `mlx-swift-lm` macros once in Xcode (or `-skipMacroValidation` on the command line).
 
 ## Quality gate
 ```bash

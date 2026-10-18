@@ -40,6 +40,13 @@ Assumes about 15–20 h/week alongside your job and applications. Each milestone
 
 AI evals (scripts/ai-evals.sh, real model): categories 10/10, chat 4/4 grounded incl. Bosnian questions.
 
+## M3.5: Choose your AI (done)
+- [x] Engine choice: Apple Intelligence, downloadable open models (MLX via FoundationModels bridge), or off
+- [x] Model library: sizes, tiers, RAM hint, download with progress, delete, disk-space check
+- [x] Structured-intent chat strategy with Swift-computed, localized answers (Bosnian)
+- [x] Shared EvalSuite: Mac tests + on-device AI lab; Apple: 6/6 chat with both strategies
+- [ ] Download a model on the iPhone 13 and record AI lab scores for Qwen3 0.6B / 1.7B / Qwen3.5 2B
+
 ## M4: Polish + ship (week 5–6)
 - [ ] Design pass (ideally with your wife): onboarding, dashboard, empty states
 - [ ] App icon, screenshots, privacy label ("Data not collected")

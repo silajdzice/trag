@@ -5,16 +5,14 @@ struct RootView: View {
     @State private var ledger: LedgerModel
     @State private var importModel: StatementImportModel
     @State private var askModel: AskMoneyModel?
-    private let isAIAvailable: Bool
+    @State private var aiSettings: AISettings
 
-    init(store: TransactionStore, aiAvailability: AIAvailability = .current) {
-        isAIAvailable = aiAvailability.isAvailable
-        _ledger = State(
-            initialValue: LedgerModel(
-                store: store,
-                suggester: aiAvailability.isAvailable ? CategorySuggester() : nil,
-                tipsGenerator: aiAvailability.isAvailable ? SavingTipsGenerator() : nil))
+    init(store: TransactionStore, aiSettings: AISettings = AISettings()) {
+        let ledger = LedgerModel(store: store)
+        ledger.useEngine(aiSettings.selectedEngine)
+        _ledger = State(initialValue: ledger)
         _importModel = State(initialValue: StatementImportModel(store: store))
+        _aiSettings = State(initialValue: aiSettings)
     }
 
     var body: some View {
@@ -22,10 +20,17 @@ struct RootView: View {
             content
                 .navigationTitle(Text(verbatim: "Trag"))
                 .toolbar {
-                    if !ledger.isEmpty, isAIAvailable {
+                    ToolbarItem(placement: .topBarLeading) {
+                        NavigationLink {
+                            AISettingsView(settings: aiSettings)
+                        } label: {
+                            Label("AI settings", systemImage: "gearshape")
+                        }
+                    }
+                    if !ledger.isEmpty, let engine = aiSettings.selectedEngine {
                         ToolbarItem(placement: .topBarLeading) {
                             Button("Ask your money", systemImage: "sparkles") {
-                                askModel = AskMoneyModel(queries: ledger.queries)
+                                askModel = AskMoneyModel(queries: ledger.queries, engine: engine)
                             }
                         }
                     }
@@ -65,6 +70,10 @@ struct RootView: View {
         .task {
             ledger.reload()
             await ledger.suggestCategories()
+        }
+        .onChange(of: aiSettings.selection) {
+            ledger.useEngine(aiSettings.selectedEngine)
+            Task { await ledger.suggestCategories() }
         }
     }
 

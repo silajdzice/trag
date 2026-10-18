@@ -24,8 +24,13 @@ final class AskMoneyModel {
 
     private let chat: MoneyChat
 
-    init(queries: SpendingQueries) {
-        chat = MoneyChat(queries: queries)
+    init(queries: SpendingQueries, engine: AIEngine) {
+        chat = MoneyChat(queries: queries, engine: engine)
+    }
+
+    /// Only model-written answers are in English; Swift-computed answers use the app's language.
+    var answersInEnglish: Bool {
+        chat.strategy == .toolCalling && !AIAvailability.supportsUserLanguage()
     }
 
     /// Questions that work well, in the user's language.
@@ -49,6 +54,8 @@ final class AskMoneyModel {
         switch await chat.ask(question) {
         case .answer(let answer):
             messages.append(Message(role: .assistant, text: answer))
+        case .computed(let answer):
+            messages.append(Message(role: answer == .notUnderstood ? .notice : .assistant, text: answer.localizedText))
         case .notGrounded:
             messages.append(
                 Message(

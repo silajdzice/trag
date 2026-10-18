@@ -1,6 +1,16 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "%@ in %@: %@": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ (%2$@): %3$@"
+          }
+        }
+      }
+    },
     "%@ less than last month": {
       "localizations": {
         "bs": {
@@ -31,6 +41,16 @@
         }
       }
     },
+    "%@, all imported months: %@": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@, svi uvezeni mjeseci: %2$@"
+          }
+        }
+      }
+    },
     "%@, received %@": {
       "localizations": {
         "bs": {
@@ -47,6 +67,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@, potrošeno %@"
+          }
+        }
+      }
+    },
+    "%@: you spent %@ and received %@.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@: potrošeno %2$@, primljeno %3$@."
           }
         }
       }
@@ -97,6 +127,52 @@
         }
       }
     },
+    "%lld payments": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld payment"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld payments"
+                }
+              }
+            }
+          }
+        },
+        "bs": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld plaćanje"
+                }
+              },
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld plaćanja"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld plaćanja"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld transactions": {
       "localizations": {
         "en": {
@@ -139,6 +215,46 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "AI": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI"
+          }
+        }
+      }
+    },
+    "AI lab": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI laboratorija"
+          }
+        }
+      }
+    },
+    "AI lab: measure quality": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI laboratorija: izmjeri kvalitet"
+          }
+        }
+      }
+    },
+    "AI settings": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI postavke"
           }
         }
       }
@@ -213,12 +329,52 @@
         }
       }
     },
+    "Best quality": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Najbolji kvalitet"
+          }
+        }
+      }
+    },
+    "Best quality, no download.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Najbolji kvalitet, bez preuzimanja."
+          }
+        }
+      }
+    },
+    "Biggest category: %@.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Najveća kategorija: %@."
+          }
+        }
+      }
+    },
     "Bills": {
       "localizations": {
         "bs": {
           "stringUnit": {
             "state": "translated",
             "value": "Računi"
+          }
+        }
+      }
+    },
+    "Built in": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ugrađeno"
           }
         }
       }
@@ -333,6 +489,46 @@
         }
       }
     },
+    "Dashboard, categories and forecasts still work.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pregled, kategorije i procjene i dalje rade."
+          }
+        }
+      }
+    },
+    "Delete": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Obriši"
+          }
+        }
+      }
+    },
+    "Delete %@": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Obriši %@"
+          }
+        }
+      }
+    },
+    "Delete this model?": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Obrisati ovaj model?"
+          }
+        }
+      }
+    },
     "Dismiss": {
       "localizations": {
         "bs": {
@@ -349,6 +545,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Gotovo"
+          }
+        }
+      }
+    },
+    "Download": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preuzmi"
+          }
+        }
+      }
+    },
+    "Download a model": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preuzmi model"
+          }
+        }
+      }
+    },
+    "Download failed. Check your connection and try again.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preuzimanje nije uspjelo. Provjeri internet vezu i pokušaj ponovo."
           }
         }
       }
@@ -439,6 +665,36 @@
         }
       }
     },
+    "Expected spending in %@: about %@.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Očekivana potrošnja za %1$@: oko %2$@."
+          }
+        }
+      }
+    },
+    "Fastest": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Najbrži"
+          }
+        }
+      }
+    },
+    "Frees %@. You can download it again later.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oslobađa %@. Možeš ga kasnije ponovo preuzeti."
+          }
+        }
+      }
+    },
     "Get 3 tips for this month": {
       "localizations": {
         "bs": {
@@ -509,6 +765,26 @@
         }
       }
     },
+    "I couldn't find any payments to “%@”.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nisam našao plaćanja za „%@“."
+          }
+        }
+      }
+    },
+    "I couldn't understand that question. Try asking about a category, a shop or a month.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nisam razumio pitanje. Pitaj o kategoriji, prodavnici ili mjesecu."
+          }
+        }
+      }
+    },
     "Import a bank statement PDF. Everything stays on this iPhone.": {
       "localizations": {
         "bs": {
@@ -525,6 +801,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Uvezi izvod"
+          }
+        }
+      }
+    },
+    "In use": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "U upotrebi"
           }
         }
       }
@@ -555,6 +841,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Provjeri da je to PDF izvod preuzet iz tvoje banke."
+          }
+        }
+      }
+    },
+    "May be slow on this iPhone: it needs more memory.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Može biti spor na ovom iPhoneu: treba mu više memorije."
+          }
+        }
+      }
+    },
+    "Models download once from Hugging Face over the internet. After that everything runs offline, and your bank data never leaves this iPhone.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modeli se jednom preuzimaju s Hugging Facea putem interneta. Nakon toga sve radi bez interneta, a tvoji bankovni podaci nikad ne napuštaju ovaj iPhone."
           }
         }
       }
@@ -619,22 +925,52 @@
         }
       }
     },
-    "On-device AI available": {
+    "Not enough free space on this iPhone.": {
       "localizations": {
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "AI na uređaju je dostupan"
+            "value": "Nema dovoljno slobodnog prostora na ovom iPhoneu."
           }
         }
       }
     },
-    "On-device AI unavailable. Insights still work.": {
+    "Not supported": {
       "localizations": {
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "AI na uređaju nije dostupan. Analize i dalje rade."
+            "value": "Nije podržano"
+          }
+        }
+      }
+    },
+    "Not supported on this iPhone.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nije podržano na ovom iPhoneu."
+          }
+        }
+      }
+    },
+    "Off": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Isključeno"
+          }
+        }
+      }
+    },
+    "Older iPhones can't use Apple Intelligence. Download a model below to use AI features.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stariji iPhonei ne mogu koristiti Apple Intelligence. Preuzmi model ispod za AI funkcije."
           }
         }
       }
@@ -685,6 +1021,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Čitam izvod…"
+          }
+        }
+      }
+    },
+    "Recommended": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preporučeno"
+          }
+        }
+      }
+    },
+    "Run evals": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pokreni testove"
           }
         }
       }
@@ -809,6 +1165,16 @@
         }
       }
     },
+    "Still getting ready.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Još se priprema."
+          }
+        }
+      }
+    },
     "Subscriptions": {
       "localizations": {
         "bs": {
@@ -825,16 +1191,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pretplate i računi"
-          }
-        }
-      }
-    },
-    "The on-device AI is still getting ready.": {
-      "localizations": {
-        "bs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "AI na uređaju se još priprema."
           }
         }
       }
@@ -865,16 +1221,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Razmišljam…"
-          }
-        }
-      }
-    },
-    "This iPhone doesn't support Apple Intelligence. Everything else works.": {
-      "localizations": {
-        "bs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ovaj iPhone ne podržava Apple Intelligence. Sve ostalo radi."
           }
         }
       }
@@ -939,12 +1285,42 @@
         }
       }
     },
-    "Turn on Apple Intelligence in Settings to use AI features.": {
+    "Turn on Apple Intelligence in Settings.": {
       "localizations": {
         "bs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Uključi Apple Intelligence u Postavkama za AI funkcije."
+            "value": "Uključi Apple Intelligence u Postavkama."
+          }
+        }
+      }
+    },
+    "Unavailable right now.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trenutno nije dostupno."
+          }
+        }
+      }
+    },
+    "Use": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Koristi"
+          }
+        }
+      }
+    },
+    "Uses made-up data, not your statements. Each strategy runs categories, chat and tips.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Koristi izmišljene podatke, ne tvoje izvode. Svaka strategija testira kategorije, chat i savjete."
           }
         }
       }
@@ -985,6 +1361,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Napisao AI na uređaju na osnovu tvojih brojeva."
+          }
+        }
+      }
+    },
+    "You pay %@ a month for subscriptions and bills: %@.": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Za pretplate i račune plaćaš %1$@ mjesečno: %2$@."
           }
         }
       }

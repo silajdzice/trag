@@ -13,7 +13,7 @@ struct AskMoneyView: View {
                 List {
                     Section {
                         Label("Runs entirely on this iPhone.", systemImage: "lock.shield")
-                        if !AIAvailability.supportsUserLanguage() {
+                        if model.answersInEnglish {
                             Label(
                                 "Answers are in English: Apple's on-device model doesn't support Bosnian yet.",
                                 systemImage: "globe")

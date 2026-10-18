@@ -87,10 +87,6 @@ struct MonthOverviewView: View {
                     }
                 }
             }
-
-            Section {
-                AIStatusLabel()
-            }
         }
         .sheet(item: $editingTransaction) { transaction in
             CategoryPickerView(
@@ -266,27 +262,6 @@ private struct TipsSection: View {
         } footer: {
             Text("Written by the on-device AI from your numbers.")
         }
-    }
-}
-
-private struct AIStatusLabel: View {
-    var body: some View {
-        Group {
-            switch AIAvailability.current {
-            case .available:
-                Label("On-device AI available", systemImage: "sparkles")
-            case .unavailable(.deviceNotEligible):
-                Label("This iPhone doesn't support Apple Intelligence. Everything else works.", systemImage: "sparkles.slash")
-            case .unavailable(.appleIntelligenceNotEnabled):
-                Label("Turn on Apple Intelligence in Settings to use AI features.", systemImage: "sparkles.slash")
-            case .unavailable(.modelNotReady):
-                Label("The on-device AI is still getting ready.", systemImage: "hourglass")
-            case .unavailable(.unknown):
-                Label("On-device AI unavailable. Insights still work.", systemImage: "sparkles.slash")
-            }
-        }
-        .font(.footnote)
-        .foregroundStyle(.secondary)
     }
 }
 
