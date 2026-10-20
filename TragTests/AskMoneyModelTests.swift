@@ -24,9 +24,11 @@ final class SlowStubChat: MoneyAnswering {
         let chat = SlowStubChat()
         let model = AskMoneyModel(chat: chat)
 
-        async let first: Void = model.send("First?")
-        async let second: Void = model.send("Second?")
-        _ = await (first, second)
+        // Start the first question and wait until the model is busy, then send the second.
+        let first = Task { await model.send("First?") }
+        while !model.isThinking { await Task.yield() }
+        await model.send("Second?")
+        await first.value
 
         #expect(chat.asked == ["First?", "Second?"])
         #expect(model.messages.map(\.role) == [.user, .user, .assistant, .assistant])

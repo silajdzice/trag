@@ -43,6 +43,7 @@ struct AskMoneyView: View {
                     }
                 }
                 .listStyle(.plain)
+                .scrollDismissesKeyboard(.interactively)
                 .onChange(of: model.messages.count) {
                     withAnimation { proxy.scrollTo(model.messages.last?.id, anchor: .bottom) }
                 }
@@ -58,29 +59,33 @@ struct AskMoneyView: View {
         }
     }
 
+    /// Sends the draft and keeps the keyboard up, so a follow-up can be typed right away.
+    private func send() {
+        isInputFocused = true
+        Task { await model.send() }
+    }
+
     private var inputBar: some View {
         HStack(alignment: .bottom, spacing: 8) {
             TextField("Ask about your spending", text: $model.draft, axis: .vertical)
                 .lineLimit(1...4)
                 .focused($isInputFocused)
                 .submitLabel(.send)
-                .onSubmit { Task { await model.send() } }
+                .onSubmit { send() }
                 .onChange(of: model.draft) { _, newValue in
                     // Return sends; a vertical text field would otherwise insert a line break.
                     if newValue.hasSuffix("\n") {
                         model.draft = String(newValue.dropLast())
-                        Task { await model.send() }
+                        send()
                     }
                 }
                 .padding(.horizontal, 14)
                 .padding(.vertical, 10)
                 .background(.regularMaterial, in: .rect(cornerRadius: 20))
-            Button("Send", systemImage: "arrow.up.circle.fill") {
-                Task { await model.send() }
-            }
-            .labelStyle(.iconOnly)
-            .font(.title)
-            .disabled(model.draft.trimmingCharacters(in: .whitespaces).isEmpty)
+            Button("Send", systemImage: "arrow.up.circle.fill", action: send)
+                .labelStyle(.iconOnly)
+                .font(.title)
+                .disabled(model.draft.trimmingCharacters(in: .whitespaces).isEmpty)
         }
         .padding()
     }

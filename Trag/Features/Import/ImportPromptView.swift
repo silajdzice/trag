@@ -3,6 +3,7 @@ import SwiftUI
 
 struct ImportPromptView: View {
     let onImport: () -> Void
+    var onTryDemo: () -> Void = {}
 
     var body: some View {
         ContentUnavailableView {
@@ -12,6 +13,7 @@ struct ImportPromptView: View {
         } actions: {
             Button("Import statement", action: onImport)
                 .buttonStyle(.borderedProminent)
+            Button("Try with demo data", action: onTryDemo)
         }
     }
 }

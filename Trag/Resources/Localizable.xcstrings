@@ -1325,6 +1325,16 @@
         }
       }
     },
+    "Try with demo data": {
+      "localizations": {
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Probaj s demo podacima"
+          }
+        }
+      }
+    },
     "Turn on Apple Intelligence in Settings.": {
       "localizations": {
         "bs": {

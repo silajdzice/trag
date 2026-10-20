@@ -41,6 +41,20 @@ final class StatementImportModel {
         }
     }
 
+    /// Loads made-up statements so the app can be tried without a real bank statement.
+    func importDemoData() {
+        do {
+            let results = try DemoData.statements().map { try store.save($0) }
+            let inserted = results.reduce(0) { $0 + $1.inserted }
+            state = .finished(
+                ImportOutcome(
+                    result: .init(inserted: inserted, alreadyImported: results.reduce(0) { $0 + $1.alreadyImported }),
+                    totalsMatch: true))
+        } catch {
+            state = .failed(ImportFailure(error))
+        }
+    }
+
     func dismissOutcome() {
         state = .idle
     }

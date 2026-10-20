@@ -84,7 +84,13 @@ struct RootView: View {
         } else if case .failed(let failure) = importModel.state, ledger.isEmpty {
             ImportFailureView(failure: failure) { importModel.isPickerPresented = true }
         } else if ledger.isEmpty {
-            ImportPromptView { importModel.isPickerPresented = true }
+            ImportPromptView {
+                importModel.isPickerPresented = true
+            } onTryDemo: {
+                importModel.importDemoData()
+                ledger.reload()
+                Task { await ledger.suggestCategories() }
+            }
         } else {
             MonthOverviewView(ledger: ledger)
         }
