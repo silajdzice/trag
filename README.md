@@ -1,5 +1,7 @@
 # Trag
 
+[![CI](https://github.com/silajdzice/trag/actions/workflows/ci.yml/badge.svg)](https://github.com/silajdzice/trag/actions/workflows/ci.yml) ![Swift 6](https://img.shields.io/badge/Swift-6-orange) ![iOS 27](https://img.shields.io/badge/iOS-27-blue) ![License: MIT](https://img.shields.io/badge/License-MIT-green)
+
 **A private money coach for iPhone.** Import a bank statement and see where your money goes, what you pay every month, and what next month will cost. Ask questions in plain language, in English or Bosnian. Everything runs on the phone: your bank data never leaves it.
 
 *Trag* is Bosnian for "trace": the trace your money leaves.
@@ -127,4 +129,4 @@ MLX compiles Metal shaders, so builds go through Xcode or `xcodebuild` (not `swi
 
 ---
 
-Built by **Edhem Silajdzic**, senior mobile engineer. [LinkedIn](https://www.linkedin.com/in/edhemsilajdzic/) · [GitHub](https://github.com/silajdzice)
+Built by **Edhem Silajdzic**, senior mobile engineer. Licensed under [MIT](LICENSE). [LinkedIn](https://www.linkedin.com/in/edhemsilajdzic/) · [GitHub](https://github.com/silajdzice)

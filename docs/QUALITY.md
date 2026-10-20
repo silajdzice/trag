@@ -46,5 +46,5 @@ Trag is a portfolio app: the code will be read by hiring managers. Every merged 
 ## Tooling
 - `swift format` (bundled with Xcode) with the repo's `.swift-format` config.
 - `scripts/check.sh` = format lint + package tests + app build. It must pass before every commit.
-- CI (GitHub Actions) runs the same script once the repo is on GitHub.
+- CI (GitHub Actions, `xcode-27` runner) runs the same `scripts/check.sh` on every push to main and on pull requests.
 - Conventional, small commits.

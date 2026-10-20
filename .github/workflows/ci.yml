@@ -1,0 +1,48 @@
+name: CI
+
+# macOS minutes are expensive on private repos, so CI runs on main and on demand.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Quality gate
+    # macOS 27 + Xcode 27 (GitHub preview image): the same toolchain as development.
+    runs-on: xcode-27
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show toolchain
+        run: |
+          sw_vers
+          xcodebuild -version
+          swift --version
+
+      - name: Install Metal Toolchain (MLX compiles Metal shaders)
+        run: xcodebuild -downloadComponent MetalToolchain
+
+      - name: Cache Swift packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/derived/SourcePackages
+          key: spm-${{ hashFiles('**/Package.resolved') }}
+
+      - name: Format, tests, build, localization
+        env:
+          DERIVED_DATA: ${{ runner.temp }}/derived
+        run: ./scripts/check.sh
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs
+          path: ${{ runner.temp }}/derived/*.log

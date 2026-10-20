@@ -14,7 +14,7 @@ Assumes about 15–20 h/week alongside your job and applications. Each milestone
 - [x] Privacy manifest, os.Logger without personal data, previews with fake data
 - [x] App unit-test target for feature models
 - [x] String Catalog: English + Bosnian (with plurals), checked by scripts/check-localization.py
-- [ ] GitHub Actions running scripts/check.sh (when the repo goes on GitHub)
+- [x] GitHub Actions running scripts/check.sh
 - [ ] UI smoke test for the import flow (with the dashboard)
 
 ## M1: Import + transactions (week 1–2)
