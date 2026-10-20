@@ -18,7 +18,7 @@ jobs:
     runs-on: xcode-27
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Show toolchain
         run: |
@@ -30,7 +30,7 @@ jobs:
         run: xcodebuild -downloadComponent MetalToolchain
 
       - name: Cache Swift packages
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ runner.temp }}/derived/SourcePackages
           key: spm-${{ hashFiles('**/Package.resolved') }}
@@ -42,7 +42,7 @@ jobs:
 
       - name: Upload logs on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: logs
           path: ${{ runner.temp }}/derived/*.log

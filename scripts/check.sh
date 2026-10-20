@@ -5,6 +5,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 DERIVED="${DERIVED_DATA:-$(mktemp -d)}"
+mkdir -p "$DERIVED"
 SIMULATOR="${SIMULATOR:-$(xcrun simctl list devices available | grep -m1 -oE 'iPhone [0-9]+[a-zA-Z ]*\(' | sed 's/ ($//')}"
 
 run() {
